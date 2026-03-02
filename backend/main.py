@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 from supabase import create_client, Client
 
-from models import JobPayload, HealthResponse
+from models import JobPayload, HealthResponse, GenerateTipsRequest, GenerateTipsResponse
 from openrouter import openrouter_client, SUPPORTED_MODELS
 from analyzer import brand_analyzer, calculate_blitz_score
 from logger import log_info, log_error, log_warn, log_debug, log_buffer
