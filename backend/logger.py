@@ -14,7 +14,7 @@ import json
 LogLevel = Literal["DEBUG", "INFO", "WARN", "ERROR"]
 
 # Component identifiers
-Component = Literal["worker", "openrouter", "analyzer", "api", "redis", "supabase"]
+Component = Literal["worker", "openrouter", "analyzer", "api", "supabase"]
 
 
 class LogEntry(BaseModel):

@@ -33,7 +33,7 @@ from chat import index_chat_handler, IndexChatRequest, IndexChatResponse, ChatSe
 class Settings(BaseSettings):
     """Application settings from environment"""
     redis_url: str = Field("redis://localhost:6379", validation_alias="REDIS_URL")
-    use_redis: bool = Field(True, validation_alias="USE_REDIS")
+    use_redis: bool = Field(False, validation_alias="USE_REDIS")
     supabase_url: str = Field("", validation_alias="SUPABASE_URL")
     supabase_service_role_key: str = Field("", validation_alias="SUPABASE_SERVICE_ROLE_KEY")
     queue_name: str = "queue:blitz_jobs"

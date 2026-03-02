@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 class JobPayload(BaseModel):
-    """Redis queue message format"""
+    """Background queue message format"""
     job_id: str
     project_id: str
     query_phrase: str
