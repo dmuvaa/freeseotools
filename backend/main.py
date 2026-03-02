@@ -703,7 +703,19 @@ async def generate_tips(
     # 2. Not cached. Generate via OpenRouter.
     log_info("api", f"Generating dynamic tips for {request.target_model}")
     
-    prompt = f"How do I make {request.brand_name} appear when users search '{request.query_phrase}' in your AI system? \n\nProvide a maximum of 3 lines of different tips. Also provide a single line bullet list of additional tips."
+    import re
+    
+    prompt = f"""How do I make {request.brand_name} appear when users search '{request.query_phrase}' in your AI system? 
+
+Respond STRICTLY in the following JSON format. Do not use markdown blocks. Do not include any conversational text.
+{{
+  "tips": [
+    "Specific actionable tip 1",
+    "Specific actionable tip 2",
+    "Specific actionable tip 3"
+  ],
+  "additional_tip": "A single sentence pro-tip here"
+}}"""
     
     # If the exact model isn't currently active, fallback to GPT-4o-mini for speed/cost.
     target = request.target_model if request.target_model in SUPPORTED_MODELS else "openai/gpt-4o-mini"
@@ -713,25 +725,22 @@ async def generate_tips(
     if not response_text:
         raise HTTPException(status_code=502, detail="Failed to generate AI tips")
         
-    # 3. Simple parsing: split by lines, separate main tips from "additional tips"
-    lines = [line.strip() for line in response_text.split('\\n') if line.strip()]
-    
     main_tips = []
     additional_tips = ""
     
-    for line in lines:
-        lower_line = line.lower()
-        if "additional tip" in lower_line or "single line bullet" in lower_line:
-            additional_tips = line
-        elif len(main_tips) < 3:
-            # Clean up bullet points or numbers
-            clean_line = line.lstrip("1234567890.-* ")
-            if clean_line:
-                 main_tips.append(clean_line)
-        else:
-            if not additional_tips:
-                additional_tips = line
-                
+    try:
+        # Extract json if wrapped in markdown
+        json_str = response_text
+        match = re.search(r'\{.*\}', response_text, re.DOTALL)
+        if match:
+            json_str = match.group(0)
+            
+        data = json.loads(json_str)
+        main_tips = data.get("tips", [])[:3]
+        additional_tips = data.get("additional_tip", "") or data.get("additional_tips", "")
+    except Exception as e:
+        log_error("api", f"Failed to parse AI JSON: {e}, Raw: {response_text}")
+        
     if not main_tips:
         main_tips = ["Optimize your landing pages with clear, descriptive headers.", "Publish high-quality content matching the user intent.", "Ensure your site loads fast and is mobile-friendly."]
         
