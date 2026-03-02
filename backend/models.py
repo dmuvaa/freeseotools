@@ -64,6 +64,20 @@ class HealthResponse(BaseModel):
     redis_connected: bool
 
 
+class GenerateTipsRequest(BaseModel):
+    """Request to generate custom AI ranking tips"""
+    project_id: str
+    query_phrase: str
+    target_model: str
+    brand_name: str
+
+
+class GenerateTipsResponse(BaseModel):
+    """Response containing custom AI ranking tips"""
+    tips: list[str]
+    additional_tips: str
+
+
 # ============================================
 # AI Index Knowledge Graph (IKG) Models
 # ============================================
