@@ -707,12 +707,12 @@ async def generate_tips(
     
     prompt = f"""How do I make {request.brand_name} appear when users search '{request.query_phrase}' in your AI system? 
 
-Respond STRICTLY in the following JSON format. Do not use markdown blocks. Do not include any conversational text.
+Respond STRICTLY in the following JSON format. Do not use markdown blocks, and DO NOT prepend numbers (like 1., 2.) to your tips.
 {{
   "tips": [
-    "Specific actionable tip 1",
-    "Specific actionable tip 2",
-    "Specific actionable tip 3"
+    "First actionable tip without numbers",
+    "Second actionable tip without numbers",
+    "Third actionable tip without numbers"
   ],
   "additional_tip": "A single sentence pro-tip here"
 }}"""
@@ -736,8 +736,27 @@ Respond STRICTLY in the following JSON format. Do not use markdown blocks. Do no
             json_str = match.group(0)
             
         data = json.loads(json_str)
-        main_tips = data.get("tips", [])[:3]
-        additional_tips = data.get("additional_tip", "") or data.get("additional_tips", "")
+        raw_tips = data.get("tips", [])
+        
+        # Some AIs clump all tips into a single string with numbers. Try to split them safely.
+        temp_tips = []
+        for tip in raw_tips:
+            if isinstance(tip, str):
+                if re.search(r'\b2\.\s', tip):
+                    parts = re.split(r'(?:^|\s)(?:\*\*)?\d+\.(?:\*\*)?\s+', tip)
+                    temp_tips.extend([p.strip() for p in parts if len(p.strip()) > 5])
+                else:
+                    temp_tips.append(tip.strip())
+                    
+        # Clean up any leftover leading numbers/bullets just in case
+        for t in temp_tips:
+            clean_t = re.sub(r'^(?:\*\*)?\d+\.(?:\*\*)?\s*', '', t)
+            clean_t = clean_t.strip("-* ")
+            if clean_t:
+                main_tips.append(clean_t)
+                
+        main_tips = main_tips[:3]
+        additional_tips = (data.get("additional_tip", "") or data.get("additional_tips", "")).strip()
     except Exception as e:
         log_error("api", f"Failed to parse AI JSON: {e}, Raw: {response_text}")
         
