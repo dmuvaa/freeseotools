@@ -49,22 +49,35 @@ export function ContentOpportunities({ job, runs, indexAudit, primaryDomain }: C
     }
 
     const renderTips = (tips: string[]) => {
-        // Defensive parsing on the frontend in case of a clumped cache or backend failure
-        const parsed: string[] = []
+        let parsed: string[] = []
         tips.forEach(tip => {
-            if (/\b2\.\s/.test(tip)) {
-                const parts = tip.split(/(?:^|\s)(?:\*\*)?\d+\.(?:\*\*)?\s+/)
-                parsed.push(...parts.map(p => p.trim()).filter(p => p.length > 5))
+            // Aggressively split massive text blocks that use numbering or bullets
+            if (tip.length > 60 && (/\d+\.\s/.test(tip) || /\*\*/.test(tip) || /\s\*\s/.test(tip) || /\s-\s/.test(tip))) {
+                // Split by '1. ', '2. ', '* ', '- ', '**1.', etc.
+                const parts = tip.split(/(?:^|\s)(?:\d+\.|[*•-])\s+(?:\*\*)?/)
+                if (parts.length <= 1) {
+                    // Try splitting by just ** if it's weirdly formatted
+                    parsed.push(...tip.split(/\*\*[A-Za-z\s]+:\*\*/).map(p => p.trim()))
+                } else {
+                    parsed.push(...parts.map(p => p.replace(/\*\*/g, '').trim()))
+                }
             } else {
-                parsed.push(tip)
+                parsed.push(tip.replace(/\*\*/g, ''))
             }
         })
 
-        const finalTips = parsed.map(t => t.replace(/^(?:\*\*)?\d+\.(?:\*\*)?\s*/, '').replace(/^[-*]\s*/, '').trim()).filter(t => t.length > 0).slice(0, 3)
+        // Filter and clean
+        const finalTips = parsed
+            .map(t => t.replace(/^(?:\*\*)?\d+\.(?:\*\*)?\s*/, '').replace(/^[-*•]\s*/, '').trim())
+            .filter(t => t.length > 20)
+            .slice(0, 3)
 
-        return finalTips.map((tip, idx) => (
+        // Fallback if the parser completely failed to extract chunks
+        const displayTips = finalTips.length > 0 ? finalTips : tips.slice(0, 3).map(t => t.replace(/\*\*/g, ''))
+
+        return displayTips.map((tip, idx) => (
             <li key={idx} className="flex gap-2.5 text-sm text-foreground">
-                <span className="text-primary font-bold">{idx + 1}.</span>
+                <span className="text-primary font-bold shrink-0">{idx + 1}.</span>
                 <span className="leading-relaxed text-left">{tip}</span>
             </li>
         ))
@@ -290,7 +303,16 @@ export function ContentOpportunities({ job, runs, indexAudit, primaryDomain }: C
                                                     </ul>
                                                     {aiTips[run.ai_model].additional_tips && (
                                                         <div className="bg-surface-1/80 backdrop-blur-sm p-3.5 rounded-lg text-xs text-text-subtle border border-border relative z-10 font-medium">
-                                                            <strong className="text-foreground">Pro-Tip:</strong> {aiTips[run.ai_model].additional_tips.replace(/^- /, '').replace(/^\* /, '')}
+                                                            <strong className="text-foreground">Pro-Tip:</strong> {
+                                                                // Clean up bolding and truncate if it's too long
+                                                                aiTips[run.ai_model].additional_tips
+                                                                    .replace(/^- /, '')
+                                                                    .replace(/^\* /, '')
+                                                                    .replace(/\*\*/g, '')
+                                                                    .replace(/Sources?:.*/i, '')
+                                                                    .replace(/Additional tips?:.*/i, '')
+                                                                    .split('.')[0] + '.'
+                                                            }
                                                         </div>
                                                     )}
                                                 </div>
