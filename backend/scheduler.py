@@ -5,7 +5,7 @@ from datetime import datetime
 from supabase import create_client
 from logger import log_info, log_error
 from models import JobPayload
-from main import settings, get_supabase, get_redis, STANDARD_MODELS
+from main import settings, get_supabase, get_redis, STANDARD_MODELS, process_job
 
 async def scheduler_loop():
     """
@@ -93,7 +93,10 @@ async def scheduler_loop():
                         job_type="STANDARD"
                     )
                     
-                    await redis_conn.lpush(settings.queue_name, json.dumps(job_payload.dict()))
+                    if settings.use_redis and redis_conn:
+                        await redis_conn.lpush(settings.queue_name, json.dumps(job_payload.dict()))
+                    else:
+                        asyncio.create_task(process_job(job_payload))
                     
                     log_info("scheduler", f"Triggered job {job_id} for keyword {keyword_id}. Credits deducted.")
                     

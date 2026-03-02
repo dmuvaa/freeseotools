@@ -33,6 +33,7 @@ from chat import index_chat_handler, IndexChatRequest, IndexChatResponse, ChatSe
 class Settings(BaseSettings):
     """Application settings from environment"""
     redis_url: str = Field("redis://localhost:6379", validation_alias="REDIS_URL")
+    use_redis: bool = Field(True, validation_alias="USE_REDIS")
     supabase_url: str = Field("", validation_alias="SUPABASE_URL")
     supabase_service_role_key: str = Field("", validation_alias="SUPABASE_SERVICE_ROLE_KEY")
     queue_name: str = "queue:blitz_jobs"
@@ -137,9 +138,12 @@ async def verify_admin_secret(x_admin_secret: str = Header(None, alias="X-Admin-
 # Database Connections
 # ============================================
 
-async def get_redis() -> redis.Redis:
+async def get_redis() -> Optional[redis.Redis]:
     """Get Redis connection"""
     global redis_client
+    if not settings.use_redis:
+        return None
+        
     if redis_client is None:
         redis_client = redis.from_url(settings.redis_url, decode_responses=True)
     return redis_client
@@ -310,7 +314,14 @@ async def worker_loop():
     Main worker loop - continuously processes jobs from Redis queue.
     Uses BRPOP for blocking pop (waits for new jobs).
     """
+    if not settings.use_redis:
+        log_info("worker", "Redis is disabled (USE_REDIS=false). Worker loop will not start.", {"worker_id": settings.worker_id})
+        return
+
     r = await get_redis()
+    if r is None:
+        return
+        
     log_info("worker", f"Starting worker loop", {
         "worker_id": settings.worker_id,
         "queue": settings.queue_name
@@ -458,10 +469,18 @@ async def health_check():
     """
     redis_ok = False
     
+    if not settings.use_redis:
+        return HealthResponse(
+            status="healthy",
+            worker_id=settings.worker_id,
+            redis_connected=False
+        )
+        
     try:
         r = await get_redis()
-        await r.ping()
-        redis_ok = True
+        if r:
+            await r.ping()
+            redis_ok = True
     except:
         pass
     
@@ -715,7 +734,11 @@ async def run_tracking_now(
                 job_type="STANDARD"
             )
             
-            await redis_conn.lpush(settings.queue_name, json.dumps(job_payload.dict()))
+            if settings.use_redis and redis_conn:
+                await redis_conn.lpush(settings.queue_name, json.dumps(job_payload.dict()))
+            else:
+                # If no Redis, process sync/background using asyncio task directly instead of queueing
+                asyncio.create_task(process_job(job_payload))
             
             # Update last_run_at
             db.table("monitored_keywords").update({
@@ -766,13 +789,16 @@ async def get_system_status():
     # Check Redis connection and queue depth
     redis_ok = False
     queue_depth = 0
-    try:
-        r = await get_redis()
-        await r.ping()
-        redis_ok = True
-        queue_depth = await r.llen(settings.queue_name)
-    except Exception as e:
-        log_warn("api", f"Redis check failed: {e}")
+    
+    if settings.use_redis:
+        try:
+            r = await get_redis()
+            if r:
+                await r.ping()
+                redis_ok = True
+                queue_depth = await r.llen(settings.queue_name)
+        except Exception as e:
+            log_warn("api", f"Redis check failed: {e}")
     
     # Get recent job stats from Supabase
     recent_jobs = {"completed": 0, "failed": 0, "queued": 0, "processing": 0}
