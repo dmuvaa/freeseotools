@@ -660,6 +660,25 @@ async def delete_project(project_id: str):
         log_error("api", f"Delete project error: {e}", {"project_id": project_id})
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/jobs/enqueue")
+async def enqueue_job(payload: JobPayload):
+    """
+    HTTP endpoint to enqueue a job from the frontend instead of directly pushing to Redis.
+    Processes the job synchronously in the background if Redis is disabled.
+    """
+    if settings.use_redis:
+        r = await get_redis()
+        if r:
+            await r.lpush(settings.queue_name, json.dumps(payload.dict()))
+            log_info("api", f"Job {payload.job_id} pushed to Redis queue from HTTP endpoint")
+            return {"status": "enqueued", "job_id": payload.job_id, "queue": "redis"}
+            
+    # Fallback/Direct processing
+    asyncio.create_task(process_job(payload))
+    log_info("api", f"Job {payload.job_id} started in background task from HTTP endpoint")
+    return {"status": "started", "job_id": payload.job_id, "queue": "background"}
+
+
 
 @app.post("/api/tracking/run-now")
 async def run_tracking_now(

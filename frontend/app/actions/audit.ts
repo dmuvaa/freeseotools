@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { pushToQueue, QUEUE_NAME } from '@/lib/redis'
 import { z } from 'zod'
 
 const CreateAuditJobSchema = z.object({
@@ -60,7 +59,6 @@ export async function createAuditJob(formData: FormData) {
             return { success: false, error: 'Failed to create audit job' }
         }
 
-        // Push to Redis queue
         const payload = {
             job_id: job.id,
             project_id: project.id,
@@ -71,7 +69,18 @@ export async function createAuditJob(formData: FormData) {
             job_type: validated.jobType,
         }
 
-        await pushToQueue(QUEUE_NAME, payload)
+        // Dispatch job to backend directly (bypassing Redis on frontend)
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
+        const response = await fetch(`${apiUrl}/api/jobs/enqueue`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+            console.error('Failed to trigger job on backend:', await response.text())
+        }
 
         // Revalidate the project page to show new job
         revalidatePath(`/project/${validated.projectId}`)
