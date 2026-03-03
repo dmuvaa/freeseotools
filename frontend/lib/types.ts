@@ -149,3 +149,13 @@ export interface LogEntry {
     metadata: Record<string, unknown>
 }
 
+export interface AIRankingTip {
+    id: string
+    project_id: string
+    query_phrase: string
+    target_model: string
+    tips: string[]
+    additional_tips: string
+    created_at: string
+}
+

@@ -18,11 +18,12 @@ interface ContentOpportunitiesProps {
     runs: AuditRun[]
     indexAudit?: IndexAudit | null
     primaryDomain?: string | null
+    initialAiTips?: Record<string, { tips: string[], additional_tips: string }>
 }
 
-export function ContentOpportunities({ job, runs, indexAudit, primaryDomain }: ContentOpportunitiesProps) {
+export function ContentOpportunities({ job, runs, indexAudit, primaryDomain, initialAiTips }: ContentOpportunitiesProps) {
     const [loadingTips, setLoadingTips] = useState<Record<string, boolean>>({})
-    const [aiTips, setAiTips] = useState<Record<string, { tips: string[], additional_tips: string }>>({})
+    const [aiTips, setAiTips] = useState<Record<string, { tips: string[], additional_tips: string }>>(initialAiTips || {})
 
     const handleGetTips = async (model: string) => {
         setLoadingTips(prev => ({ ...prev, [model]: true }))

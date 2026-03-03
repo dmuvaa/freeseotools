@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Sidebar } from '@/components/Sidebar'
 import { ContentOpportunities } from '@/components/ContentOpportunities'
 import { createClient } from '@/lib/supabase/client'
-import type { AuditJob, AuditRun, Project, IndexAudit } from '@/lib/types'
+import type { AuditJob, AuditRun, Project, IndexAudit, AIRankingTip } from '@/lib/types'
 import { LightbulbIcon } from 'lucide-react'
 
 export default function ContentStrategyPage() {
@@ -16,6 +16,7 @@ export default function ContentStrategyPage() {
     const [latestJob, setLatestJob] = useState<AuditJob | null>(null)
     const [runs, setRuns] = useState<AuditRun[]>([])
     const [indexAudit, setIndexAudit] = useState<IndexAudit | null>(null)
+    const [aiTipsData, setAiTipsData] = useState<Record<string, { tips: string[], additional_tips: string }>>({})
 
     // 1. Initial Load: Fetch Projects
     useEffect(() => {
@@ -58,6 +59,7 @@ export default function ContentStrategyPage() {
             setLatestJob(null)
             setRuns([])
             setIndexAudit(null)
+            setAiTipsData({})
 
             // Fetch Latest Completed Job
             const { data: job } = await supabase
@@ -72,13 +74,27 @@ export default function ContentStrategyPage() {
             if (job) {
                 setLatestJob(job)
 
-                // Fetch Runs
                 const { data: runsData } = await supabase
                     .from('audit_runs')
                     .select('*')
                     .eq('job_id', job.id)
                     .order('created_at', { ascending: true })
                 setRuns(runsData || [])
+
+                // Fetch AI Ranking Tips
+                const { data: tipsData } = await supabase
+                    .from('ai_ranking_tips')
+                    .select('*')
+                    .eq('project_id', selectedProject?.id)
+                    .eq('query_phrase', job.query_phrase)
+
+                if (tipsData) {
+                    const tipsMap: Record<string, { tips: string[], additional_tips: string }> = {}
+                    tipsData.forEach(tip => {
+                        tipsMap[tip.target_model] = { tips: tip.tips, additional_tips: tip.additional_tips }
+                    })
+                    setAiTipsData(tipsMap)
+                }
 
                 // Fetch Index Audit
                 if (job.job_type === 'INDEX_GRAPH') {
@@ -167,6 +183,7 @@ export default function ContentStrategyPage() {
                             runs={runs}
                             indexAudit={indexAudit}
                             primaryDomain={selectedProject?.primary_domain}
+                            initialAiTips={aiTipsData}
                         />
                     </div>
                 )}
