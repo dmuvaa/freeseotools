@@ -4,34 +4,74 @@ export function Footer() {
     return (
         <footer className="border-t border-[var(--border)] py-12 bg-[var(--surface-1)]">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6 mb-8">
                     <div>
-                        <h3 className="font-semibold mb-4">Product</h3>
+                        <h3 className="font-semibold mb-3 text-sm">Product</h3>
                         <ul className="space-y-2">
-                            <li><Link href="/features" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Features</Link></li>
-                            <li><Link href="/pricing" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Pricing</Link></li>
-                            <li><Link href="/dashboard" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Dashboard</Link></li>
+                            <li><Link href="/features" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Features</Link></li>
+                            <li><Link href="/pricing" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Pricing</Link></li>
+                            <li><Link href="/dashboard" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Dashboard</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h3 className="font-semibold mb-4">Resources</h3>
-                        <ul className="space-y-2">
-                            <li><Link href="/docs" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Documentation</Link></li>
-                            <li><Link href="/blog" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Blog</Link></li>
+                        <h3 className="font-semibold mb-3 text-sm">Free SEO Tools</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/tools/meta-tags-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Meta Tags Analyzer</Link></li>
+                            <li><Link href="/tools/robots-txt-tester" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Robots.txt Tester</Link></li>
+                            <li><Link href="/tools/sitemap-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Sitemap Analyzer</Link></li>
+                            <li><Link href="/tools/redirect-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Redirect Checker</Link></li>
+                            <li><Link href="/tools/http-headers-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">HTTP Headers</Link></li>
+                            <li><Link href="/tools/title-meta-length" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Title & Meta Length</Link></li>
+                            <li><Link href="/tools/heading-structure" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Heading Structure</Link></li>
+                            <li><Link href="/tools/broken-link-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Broken Link Checker</Link></li>
+                            <li><Link href="/tools/serp-preview" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">SERP Preview</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h3 className="font-semibold mb-4">Company</h3>
-                        <ul className="space-y-2">
-                            <li><Link href="/about" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">About</Link></li>
-                            <li><Link href="/contact" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Contact</Link></li>
+                        <h3 className="font-semibold mb-3 text-sm">Advanced Tools</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/tools/internal-link-audit" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Internal Link Audit</Link></li>
+                            <li><Link href="/tools/crawl-budget-simulator" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Crawl Budget Simulator</Link></li>
+                            <li><Link href="/tools/indexability-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Indexability Checker</Link></li>
+                            <li><Link href="/tools/anchor-text-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Anchor Text Analyzer</Link></li>
+                            <li><Link href="/tools/thin-content-detector" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Thin Content Detector</Link></li>
+                            <li><Link href="/tools/keyword-cannibalization" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Keyword Cannibalization</Link></li>
+                            <li><Link href="/tools/log-file-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Log File Analyzer</Link></li>
+                            <li><Link href="/tools/core-web-vitals" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">CWV Comparator</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h3 className="font-semibold mb-4">Legal</h3>
-                        <ul className="space-y-2">
-                            <li><Link href="/privacy" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Privacy</Link></li>
-                            <li><Link href="/terms" className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)]">Terms</Link></li>
+                        <h3 className="font-semibold mb-3 text-sm">Lighthouse Suite</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/tools/lighthouse-mobile" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Mobile Lighthouse</Link></li>
+                            <li><Link href="/tools/lighthouse-desktop" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Desktop Lighthouse</Link></li>
+                            <li><Link href="/tools/lighthouse-js-rendering" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">JS Rendering</Link></li>
+                            <li><Link href="/tools/lighthouse-cwv" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Core Web Vitals</Link></li>
+                            <li><Link href="/tools/lighthouse-seo" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">SEO Lighthouse</Link></li>
+                            <li><Link href="/tools/lighthouse-accessibility" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Accessibility</Link></li>
+                            <li><Link href="/tools/lighthouse-tracker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Performance Tracker</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold mb-3 text-sm">Resources</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/schema-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Schema Checker</Link></li>
+                            <li><Link href="/docs" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Documentation</Link></li>
+                            <li><Link href="/blog" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Blog</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold mb-3 text-sm">Company</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/about" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">About</Link></li>
+                            <li><Link href="/contact" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Contact</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold mb-3 text-sm">Legal</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/privacy" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Privacy</Link></li>
+                            <li><Link href="/terms" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Terms</Link></li>
                         </ul>
                     </div>
                 </div>

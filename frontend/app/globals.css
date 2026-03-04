@@ -86,17 +86,17 @@
   --error-muted: rgba(220, 38, 38, 0.1);
 
   /* Surface colors */
-  --surface-1: #f9fafb;
-  --surface-2: #f3f4f6;
-  --surface-3: #e5e7eb;
+  --surface-1: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #f1f5f9;
 
   /* Border */
-  --border: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.15);
+  --border: #e2e8f0;
+  --border-hover: #cbd5e1;
 
   /* Text */
-  --text-muted: #6b7280;
-  --text-subtle: #4b5563;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
 }
 
 @theme inline {
@@ -220,4 +220,168 @@ html {
 
 .score-low {
   color: var(--error);
+}
+
+/* ============================================
+   MARKUP SCHEMA COMPONENTS HARMONIZATION
+   ============================================ */
+
+/* Container */
+.container-narrow {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.container-wide {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Section Spacing */
+.section {
+  padding: 6rem 0;
+}
+
+.section-sm {
+  padding: 4rem 0;
+}
+
+/* Base Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  /* Pill shaped to match Blitzgeo */
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-lg {
+  padding: 0.75rem 2rem;
+  height: 3rem;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-1);
+  border-color: var(--border-hover);
+}
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+}
+
+.badge-strong {
+  background: var(--success-muted);
+  color: var(--success);
+}
+
+.badge-weak {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+
+.badge-conflict,
+.badge-error {
+  background: var(--error-muted);
+  color: var(--error);
+}
+
+.badge-info {
+  background: var(--primary-muted);
+  color: var(--primary);
+}
+
+/* Utility Colors used in inline classes */
+.bg-accent-blue {
+  background: var(--primary);
+}
+
+.text-accent-blue {
+  color: var(--primary);
+}
+
+.bg-accent-blue-glow {
+  background: var(--primary-muted);
+}
+
+.bg-accent-green {
+  background: var(--success);
+}
+
+.text-accent-green {
+  color: var(--success);
+}
+
+.bg-accent-green-glow {
+  background: var(--success-muted);
+}
+
+.bg-accent-amber {
+  background: var(--warning);
+}
+
+.text-accent-amber {
+  color: var(--warning);
+}
+
+.bg-accent-amber-glow {
+  background: var(--warning-muted);
+}
+
+.bg-accent-red {
+  background: var(--error);
+}
+
+.text-accent-red {
+  color: var(--error);
+}
+
+.bg-accent-red-glow {
+  background: var(--error-muted);
+}
+
+/* Animation Glow */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--primary-muted);
+  }
+
+  50% {
+    box-shadow: 0 0 40px var(--primary-muted);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
