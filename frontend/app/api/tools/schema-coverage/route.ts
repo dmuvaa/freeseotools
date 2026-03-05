@@ -1,0 +1,114 @@
+import { NextRequest, NextResponse } from "next/server";
+import * as cheerio from "cheerio";
+
+function extractSchemaTypes(html: string): { types: string[]; errors: string[] } {
+    const $ = cheerio.load(html);
+    const types: string[] = [];
+    const errors: string[] = [];
+
+    $("script[type='application/ld+json']").each((_, el) => {
+        const raw = $(el).html() || "";
+        try {
+            const parsed = JSON.parse(raw);
+            const items = Array.isArray(parsed) ? parsed : [parsed];
+            items.forEach((item: any) => {
+                if (item["@type"]) {
+                    const t = Array.isArray(item["@type"]) ? item["@type"] : [item["@type"]];
+                    types.push(...t);
+                }
+            });
+        } catch (e: any) {
+            errors.push(`Parse error: ${e.message?.slice(0, 80)}`);
+        }
+    });
+
+    // Microdata
+    $("[itemtype]").each((_, el) => {
+        const itemtype = $(el).attr("itemtype") || "";
+        const type = itemtype.split("/").pop();
+        if (type) types.push(`${type} (microdata)`);
+    });
+
+    return { types: [...new Set(types)], errors };
+}
+
+async function fetchPage(url: string) {
+    try {
+        const res = await fetch(url, {
+            headers: { "User-Agent": "Mozilla/5.0 (compatible; BlitzGeo/1.0)" },
+            signal: AbortSignal.timeout(8000),
+            redirect: "follow",
+        });
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const links: string[] = [];
+        $("a[href]").each((_, el) => {
+            try {
+                const href = new URL($(el).attr("href")!, url).href.split("#")[0];
+                if (new URL(href).hostname === new URL(url).hostname) links.push(href);
+            } catch { }
+        });
+        return { html, links: [...new Set(links)], status: res.status };
+    } catch { return null; }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const { url } = await req.json();
+        if (!url) return NextResponse.json({ error: "URL is required" }, { status: 400 });
+
+        let startUrl = url.trim();
+        if (!startUrl.startsWith("http")) startUrl = "https://" + startUrl;
+
+        const visited = new Set<string>();
+        const queue = [startUrl];
+        const pageResults: Array<{
+            url: string;
+            schemaTypes: string[];
+            errors: string[];
+            hasSchema: boolean;
+        }> = [];
+
+        while (queue.length > 0 && visited.size < 50) {
+            const batch = queue.splice(0, 5).filter(u => !visited.has(u));
+            if (!batch.length) continue;
+            batch.forEach(u => visited.add(u));
+
+            const results = await Promise.all(batch.map(async (pageUrl) => {
+                const res = await fetchPage(pageUrl);
+                if (!res) return null;
+                const { types, errors } = extractSchemaTypes(res.html);
+                res.links.filter(l => !visited.has(l)).slice(0, 10).forEach(l => queue.push(l));
+                return {
+                    url: pageUrl,
+                    schemaTypes: types,
+                    errors,
+                    hasSchema: types.length > 0,
+                };
+            }));
+
+            results.forEach(r => { if (r) pageResults.push(r); });
+        }
+
+        // Aggregate schema types across site
+        const allTypes = new Map<string, number>();
+        pageResults.forEach(p => {
+            p.schemaTypes.forEach(t => allTypes.set(t, (allTypes.get(t) || 0) + 1));
+        });
+
+        const pagesWithSchema = pageResults.filter(p => p.hasSchema).length;
+        const pagesWithoutSchema = pageResults.filter(p => !p.hasSchema).length;
+        const pagesWithErrors = pageResults.filter(p => p.errors.length > 0).length;
+
+        return NextResponse.json({
+            pagesCrawled: pageResults.length,
+            pagesWithSchema,
+            pagesWithoutSchema,
+            pagesWithErrors,
+            schemaTypeDistribution: Object.fromEntries([...allTypes.entries()].sort((a, b) => b[1] - a[1])),
+            pages: pageResults.sort((a, b) => b.schemaTypes.length - a.schemaTypes.length),
+        });
+    } catch (e: any) {
+        return NextResponse.json({ error: e.message || "Analysis failed" }, { status: 500 });
+    }
+}

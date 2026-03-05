@@ -43,12 +43,6 @@ export function Header() {
                     <Link href="/docs" className="text-sm font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                         Docs
                     </Link>
-                    <Link href="/schema-checker" className="text-sm font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
-                        Schema Checker
-                    </Link>
-                    <Link href="/javascript-rendering-checker" className="text-sm font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
-                        JS Rendering Checker
-                    </Link>
                 </nav>
                 <div className="hidden md:flex gap-4 items-center">
                     <button
@@ -102,12 +96,6 @@ export function Header() {
                         </Link>
                         <Link href="/docs" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)]" onClick={() => setMobileMenuOpen(false)}>
                             Docs
-                        </Link>
-                        <Link href="/schema-checker" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)]" onClick={() => setMobileMenuOpen(false)}>
-                            Schema Checker
-                        </Link>
-                        <Link href="/javascript-rendering-checker" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)]" onClick={() => setMobileMenuOpen(false)}>
-                            JS Rendering Checker
                         </Link>
                         <div className="flex flex-col gap-2 pt-4 border-t border-[var(--border)]">
                             <Link href="/dashboard" className="text-sm font-medium text-[var(--text-muted)]" onClick={() => setMobileMenuOpen(false)}>

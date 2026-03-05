@@ -81,7 +81,7 @@ export default function AnalyzePage() {
                                 type="text"
                                 name="url"
                                 placeholder="example.com"
-                                className="input flex-1"
+                                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface-1)] px-5 py-4 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition shadow-inner"
                                 required
                                 disabled={isPending}
                                 ref={inputRef}
@@ -399,7 +399,7 @@ export default function AnalyzePage() {
                                                 <div className="p-3 bg-surface-2 rounded-lg border border-border">
                                                     <div className="text-xs text-foreground-subtle uppercase mb-1">Crawl Depth Risk</div>
                                                     <div className={`font-semibold text-lg ${extraData.internal_link_analysis.structure.depthRisk === 'High' ? 'text-accent-red' :
-                                                            extraData.internal_link_analysis.structure.depthRisk === 'Medium' ? 'text-accent-amber' : 'text-accent-green'
+                                                        extraData.internal_link_analysis.structure.depthRisk === 'Medium' ? 'text-accent-amber' : 'text-accent-green'
                                                         }`}>{extraData.internal_link_analysis.structure.depthRisk}</div>
                                                 </div>
                                                 <div className="p-3 bg-surface-2 rounded-lg border border-border">

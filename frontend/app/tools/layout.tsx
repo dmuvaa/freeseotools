@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Globe, FileText, Zap, Link as LinkIcon, BarChart, FileCode, CheckCircle, Smartphone } from "lucide-react";
+import { Search, Globe, FileText, Zap, Link as LinkIcon, BarChart, FileCode, CheckCircle, Smartphone, GitBranch, Layers, SlidersHorizontal, Copy, Tag, Package, Share2, Timer, Map, Scissors, GitMerge, History, ClipboardList } from "lucide-react";
 
 const tools = [
     { name: "Meta Tags Analyzer", href: "/tools/meta-tags-analyzer", icon: <Globe className="size-4" /> },
@@ -24,11 +24,18 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
             <aside className="w-full md:w-64 border-r border-[var(--border)] shrink-0 bg-[var(--surface-1)]">
                 <div className="p-4 md:sticky top-0 h-screen overflow-y-auto hidden md:block">
                     <Link
-                        href="/tools"
+                        href="/free-seo-tools"
                         className="flex items-center gap-2 px-3 py-2 mb-5 font-bold text-base text-[var(--foreground)]"
                     >
                         <span className="size-6 rounded-md bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-white font-bold text-xs shrink-0">S</span>
                         SEO Tools
+                    </Link>
+
+                    {/* ── Featured ── */}
+                    <Link href="/tools/seo-audit"
+                        className={`flex items-center gap-2 px-3 py-2.5 mb-3 rounded-lg text-sm font-semibold transition-colors border ${pathname === "/tools/seo-audit" ? "bg-[var(--primary)] text-white border-[var(--primary)]" : "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20 hover:bg-[var(--primary)]/20"}`}>
+                        <ClipboardList className="size-4 shrink-0" />
+                        Comprehensive SEO Audit
                     </Link>
 
                     <NavSection label="SEO Tools" tools={tools} pathname={pathname} />
@@ -52,6 +59,27 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
                         { name: "SEO Audit", href: "/tools/lighthouse-seo", icon: <Search className="size-4" /> },
                         { name: "Accessibility", href: "/tools/lighthouse-accessibility", icon: <CheckCircle className="size-4" /> },
                         { name: "Performance Tracker", href: "/tools/lighthouse-tracker", icon: <BarChart className="size-4" /> },
+                    ]} />
+
+                    <NavSection label="Technical Analysis" pathname={pathname} tools={[
+                        { name: "JS SEO Diff", href: "/tools/js-seo-diff", icon: <GitBranch className="size-4" /> },
+                        { name: "Canonical Conflicts", href: "/tools/canonical-conflicts", icon: <GitMerge className="size-4" /> },
+                        { name: "Pagination Analyzer", href: "/tools/pagination-analyzer", icon: <SlidersHorizontal className="size-4" /> },
+                        { name: "Duplicate Content", href: "/tools/duplicate-content", icon: <Copy className="size-4" /> },
+                        { name: "Schema Coverage", href: "/tools/schema-coverage", icon: <Tag className="size-4" /> },
+                    ]} />
+
+                    <NavSection label="Performance" pathname={pathname} tools={[
+                        { name: "JS Bundle Analyzer", href: "/tools/js-bundle-analyzer", icon: <Package className="size-4" /> },
+                        { name: "Third-Party Scripts", href: "/tools/third-party-scripts", icon: <Share2 className="size-4" /> },
+                        { name: "TTFB Checker", href: "/tools/ttfb-checker", icon: <Timer className="size-4" /> },
+                    ]} />
+
+                    <NavSection label="Diagnostics" pathname={pathname} tools={[
+                        { name: "Crawl Path Visualizer", href: "/tools/crawl-path", icon: <Map className="size-4" /> },
+                        { name: "SERP Snippet", href: "/tools/serp-snippet", icon: <Scissors className="size-4" /> },
+                        { name: "Orphan Page Finder", href: "/tools/orphan-pages", icon: <Layers className="size-4" /> },
+                        { name: "Index History", href: "/tools/index-history", icon: <History className="size-4" /> },
                     ]} />
                 </div>
             </aside>

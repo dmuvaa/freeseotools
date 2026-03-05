@@ -4,7 +4,16 @@ export function Footer() {
     return (
         <footer className="border-t border-[var(--border)] py-12 bg-[var(--surface-1)]">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6 mb-8">
+                <div className="mb-6 rounded-xl border border-[var(--primary)]/30 bg-[var(--primary)]/5 p-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p className="text-sm font-semibold text-[var(--primary)]">✦ Comprehensive SEO Audit</p>
+                        <p className="text-xs text-[var(--text-muted)] mt-0.5">Check any page across 9 SEO categories — security, technical, on-page, performance, structured data & more.</p>
+                    </div>
+                    <Link href="/tools/seo-audit" className="shrink-0 px-4 py-2 rounded-lg bg-[var(--primary)] text-white text-xs font-semibold hover:opacity-90 transition-opacity whitespace-nowrap">
+                        Run Audit →
+                    </Link>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-10 gap-6 mb-8">
                     <div>
                         <h3 className="font-semibold mb-3 text-sm">Product</h3>
                         <ul className="space-y-2">
@@ -16,6 +25,8 @@ export function Footer() {
                     <div>
                         <h3 className="font-semibold mb-3 text-sm">Free SEO Tools</h3>
                         <ul className="space-y-1.5">
+                            <li><Link href="/schema-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Schema Checker</Link></li>
+                            <li><Link href="/javascript-rendering-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">JS Rendering Checker</Link></li>
                             <li><Link href="/tools/meta-tags-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Meta Tags Analyzer</Link></li>
                             <li><Link href="/tools/robots-txt-tester" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Robots.txt Tester</Link></li>
                             <li><Link href="/tools/sitemap-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Sitemap Analyzer</Link></li>
@@ -53,9 +64,35 @@ export function Footer() {
                         </ul>
                     </div>
                     <div>
+                        <h3 className="font-semibold mb-3 text-sm">Technical Analysis</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/tools/js-seo-diff" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">JS SEO Diff</Link></li>
+                            <li><Link href="/tools/canonical-conflicts" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Canonical Conflicts</Link></li>
+                            <li><Link href="/tools/pagination-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Pagination Analyzer</Link></li>
+                            <li><Link href="/tools/duplicate-content" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Duplicate Content</Link></li>
+                            <li><Link href="/tools/schema-coverage" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Schema Coverage</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold mb-3 text-sm">Performance</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/tools/js-bundle-analyzer" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">JS Bundle Analyzer</Link></li>
+                            <li><Link href="/tools/third-party-scripts" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Third-Party Scripts</Link></li>
+                            <li><Link href="/tools/ttfb-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">TTFB Checker</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold mb-3 text-sm">Diagnostics</h3>
+                        <ul className="space-y-1.5">
+                            <li><Link href="/tools/crawl-path" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Crawl Path Visualizer</Link></li>
+                            <li><Link href="/tools/serp-snippet" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">SERP Snippet</Link></li>
+                            <li><Link href="/tools/orphan-pages" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Orphan Page Finder</Link></li>
+                            <li><Link href="/tools/index-history" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Index History</Link></li>
+                        </ul>
+                    </div>
+                    <div>
                         <h3 className="font-semibold mb-3 text-sm">Resources</h3>
                         <ul className="space-y-1.5">
-                            <li><Link href="/schema-checker" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Schema Checker</Link></li>
                             <li><Link href="/docs" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Documentation</Link></li>
                             <li><Link href="/blog" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">Blog</Link></li>
                         </ul>

@@ -22,7 +22,8 @@
 :root {
   /* Dark mode as default - BlitzGeo brand colors */
   --background: #0a0a0f;
-  --foreground: #f4f4f5;
+  --foreground: #ffffff;
+  /* Pure white */
 
   /* Primary - Electric Indigo */
   --primary: #6366f1;
@@ -55,18 +56,19 @@
   --border-hover: rgba(255, 255, 255, 0.15);
 
   /* Text */
-  --text-muted: #71717a;
+  --text-muted: #d4d4d8;
+  /* Brighter */
   --text-subtle: #a1a1aa;
 }
 
 /* Light mode - applied by next-themes via class="light" on html */
 .light {
   --background: #ffffff;
-  --foreground: #18181b;
+  --foreground: #000000;
 
   /* Primary - Electric Indigo */
   --primary: #4f46e5;
-  --primary-hover: #6366f1;
+  --primary-hover: #4338ca;
   --primary-muted: rgba(79, 70, 229, 0.1);
 
   /* Accent - Cyan */
@@ -95,8 +97,10 @@
   --border-hover: #cbd5e1;
 
   /* Text */
-  --text-muted: #64748b;
-  --text-subtle: #94a3b8;
+  --text-muted: #171717;
+  /* Very near black */
+  --text-subtle: #262626;
+  /* Very dark grey */
 }
 
 @theme inline {
@@ -133,6 +137,8 @@ body {
 
 /* Smooth scrolling */
 html {
+  font-size: 17px;
+  /* Bumped up significantly to uniformly scale everything */
   scroll-behavior: smooth;
 }
 
