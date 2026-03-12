@@ -1,83 +1,36 @@
-# BlitzGeo 🚀
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-**AI Brand Visibility Audit Platform**
+## Getting Started
 
-Discover how your brand appears across AI search engines. Audit GPT-5, Gemini, Claude, and Perplexity in seconds to understand your visibility in the age of AI.
+First, run the development server:
 
----
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## What is BlitzGeo?
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-BlitzGeo is the first platform designed to help brands measure and improve their visibility in Generative AI results. As search behaviors shift from traditional links to AI-synthesized answers, BlitzGeo provides the insights needed to ensure your brand is correctly represented.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
----
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Key Features
+## Learn More
 
-### 🆕 AI Index Audit (Index Knowledge Graph)
-**Reverse-engineer the "AI Brain" regarding your brand.**
+To learn more about Next.js, take a look at the following resources:
 
-Traditional SEO tracking doesn't work for LLMs. Our Index Knowledge Graph (IKG) probes AI models to reveal their internal representation of your brand entity.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-- **Recall Boundary**: Determine exactly which of your digital assets the AI can "remember" and retrieve.
-- **Concept Anchors**: Identify the key phrases and associations the AI firmly links to your brand.
-- **Dominance**: See which external sources are effectively rewriting your brand narrative.
-- **Negative Space**: Discover critical information gaps where the AI hallucinates or remains silent.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-### 💬 Geo Chat
-**Talk to your Data.**
+## Deploy on Vercel
 
-Don't just look at charts—interact with them. Geo Chat allows you to have a conversation with your audit results.
-- **Deep Analysis**: Ask complex questions like "Why did Gemini favor these competitors?"
-- **Strategy Generation**: Get AI-generated recommendations for improving your visibility.
-- **Persistent Memory**: Your chats are saved for 72 hours, allowing for ongoing analysis.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-### ✅ Standard Audits
-**Real-time response tracking across the AI landscape.**
-
-- **Multi-Model Coverage**: Simultaneously audit GPT-5, Gemini 2.5 Pro, Claude Opus 4.5, Perplexity Sonar, and DeepSeek.
-- **Blitz Score**: A unified 0-100 metric for your brand's presence in AI answers.
-- **Citation Extraction**: Automatically identify and list every source cited by the AI.
-
----
-
-## Design Philosophy
-
-- **Dark Mode Native**: A premium, focus-driven interface designed for professional analysts.
-- **Optimistic Performance**: Instant feedback loops for a responsive, modern experience.
-- **Data-Driven**: We focus on observable retrieval evidence, not black-box guesses.
-
----
-
-## Development
-
-### Backend
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Create and activate a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Run the server:
-   ```bash
-   uvicorn main:app --port 8000 --reload
-   ```
-
-The backend API will be available at `http://localhost:8000`.
-
----
-
-## License
-
-MIT
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

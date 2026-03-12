@@ -4,6 +4,14 @@
 /node_modules
 /.pnp
 .pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
 
 # next.js
 /.next/
@@ -11,7 +19,14 @@
 
 # production
 /build
-/dist
+
+# misc
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+*.pem
 
 # debug
 npm-debug.log*
@@ -19,32 +34,31 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env
-.env.*
+# env files (can opt-in for committing if needed)
+.env*
 !.env.example
+!.env.template
 
-# vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# macOS
+# OS generated files
 .DS_Store
-**/.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# IDEs & editors
-.idea/
+# Editors
 .vscode/
-*.swp
-*.swo
-*~
-
-# testing
-/coverage
-
-# misc
-*.pem
-.turbo
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
