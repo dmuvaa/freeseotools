@@ -16,9 +16,9 @@ export default function PrivacyPage() {
                     <section>
                         <h2 className="text-2xl font-bold mb-4">1. Introduction</h2>
                         <p className="text-[var(--text-muted)] mb-4">
-                            Free SEO Tools ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy
+                            Free SEO Tools ("we," "our," or "us") is committed to protecting your privacy. Our tools are 100% free to use and require no account registration or sign-in. This Privacy Policy
                             explains how we collect, use, disclose, and safeguard your information when you use our
-                            AI brand visibility platform and related services.
+                            website and related services.
                         </p>
                     </section>
 
@@ -26,9 +26,9 @@ export default function PrivacyPage() {
                         <h2 className="text-2xl font-bold mb-4">2. Information We Collect</h2>
                         <h3 className="text-lg font-semibold mb-2">2.1 Information You Provide</h3>
                         <ul className="list-disc list-inside text-[var(--text-muted)] mb-4 space-y-2">
-                            <li>Account information (name, email, password)</li>
-                            <li>Project data (brand names, aliases, audit configurations)</li>
+                            <li>Data entered into our tools (URLs, keywords, search parameters)</li>
                             <li>Communications with our support team</li>
+                            <li>Feedback or feature requests you submit</li>
                         </ul>
 
                         <h3 className="text-lg font-semibold mb-2">2.2 Information We Collect Automatically</h3>

@@ -24,19 +24,17 @@ export default function TermsPage() {
                     <section>
                         <h2 className="text-2xl font-bold mb-4">2. Description of Service</h2>
                         <p className="text-[var(--text-muted)] mb-4">
-                            Free SEO Tools provides an AI brand visibility audit platform that allows users to analyze how
-                            their brand appears across various AI language models including GPT-5, Gemini, Claude,
-                            Perplexity, and DeepSeek.
+                            Free SEO Tools provides a suite of completely free search engine optimization utilities. All tools are 
+                            available without account registration, sign-in, or payment.
                         </p>
                     </section>
 
                     <section>
-                        <h2 className="text-2xl font-bold mb-4">3. Account Registration</h2>
-                        <ul className="list-disc list-inside text-[var(--text-muted)] mb-4 space-y-2">
-                            <li>Provide accurate and complete information</li>
-                            <li>Maintain the security of your account credentials</li>
-                            <li>Be responsible for all activities under your account</li>
-                        </ul>
+                        <h2 className="text-2xl font-bold mb-4">3. No Account Required</h2>
+                        <p className="text-[var(--text-muted)] mb-4">
+                            Our tools are designed to be accessible without registration. You do not need to create an account, provide 
+                            a password, or login to use any features of Free SEO Tools.
+                        </p>
                     </section>
 
                     <section>
@@ -54,8 +52,8 @@ export default function TermsPage() {
                         <h2 className="text-2xl font-bold mb-4">5. Intellectual Property</h2>
                         <p className="text-[var(--text-muted)] mb-4">
                             Free SEO Tools and its original content, features, and functionality are owned by Free SEO Tools
-                            and are protected by intellectual property laws. You retain ownership of your brand data
-                            and audit results.
+                            and are protected by intellectual property laws. You retain ownership of any data
+                            you input into our tools.
                         </p>
                     </section>
 
@@ -63,7 +61,7 @@ export default function TermsPage() {
                         <h2 className="text-2xl font-bold mb-4">6. Disclaimer</h2>
                         <p className="text-[var(--text-muted)] mb-4">
                             THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND. We do not guarantee that
-                            AI model responses are accurate or that audit results will lead to specific business outcomes.
+                            tool results are perfectly accurate or that they will lead to specific business outcomes.
                         </p>
                     </section>
 
