@@ -55,10 +55,6 @@ function extractSchemaTypes(html: string): { types: string[]; errors: string[]; 
 
 async function fetchPage(url: string) {
     try {
-        // Fix for UNABLE_TO_GET_ISSUER_CERT_LOCALLY
-        if (process.env.NODE_ENV === 'development') {
-            process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-        }
         const res = await fetch(url, {
             headers: { "User-Agent": "Mozilla/5.0 (compatible; Free SEO Tools/1.0)" },
             signal: AbortSignal.timeout(8000),
