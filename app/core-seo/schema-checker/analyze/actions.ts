@@ -13,35 +13,36 @@ export interface SchemaCoverageState {
         pages: Array<{
             url: string;
             schemaTypes: string[];
+            jsonLd: string[];
             errors: string[];
+            warnings?: string[];
             hasSchema: boolean;
         }>;
     };
 }
 
+import { performSchemaAnalysis } from "@/app/api/tools/schema-coverage/route";
+
 export async function analyzeSchemaCoverage(
     prevState: SchemaCoverageState,
     formData: FormData
 ): Promise<SchemaCoverageState> {
-    const url = formData.get("url") as string;
+    let url = formData.get("url") as string;
+    const mode = formData.get("mode") as string || "single";
 
     if (!url) {
         return { error: "Please enter a URL" };
     }
 
+    url = url.trim();
+    if (!url.startsWith("http")) {
+        url = "https://" + url;
+    }
+
+    const maxPages = mode === "site" ? 50 : 1;
+
     try {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-        const res = await fetch(`${baseUrl}/api/tools/schema-coverage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-            return { error: data.error || "Failed to analyze schema coverage" };
-        }
-
+        const data = await performSchemaAnalysis(url, maxPages);
         return {
             url,
             success: true,

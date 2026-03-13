@@ -18,7 +18,7 @@ export default function SchemaCheckerLandingPage() {
           backgroundSize: '40px 40px'
         }} />
 
-        <div className="relative container mx-auto max-w-4xl px-6 text-center">
+        <div className="relative container mx-auto max-w-7xl px-6 text-center">
           <h1 className="mb-6 text-4xl md:text-6xl font-extrabold tracking-tight leading-tight text-foreground">
             Stop Guessing. <br />
             <span className="text-blue-600 dark:text-blue-400 mt-2 text-2xl md:text-4xl font-bold">Start Structuring.</span>
@@ -28,7 +28,7 @@ export default function SchemaCheckerLandingPage() {
             This is not just a tool; it is your translator. Schema markup removes the guesswork, telling Google exactly what your content means.
           </p>
 
-          <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full max-w-4xl mx-auto ring-4 ring-blue-500/5 transition-all">
+          <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full max-w-7xl mx-auto ring-4 ring-blue-500/5 transition-all">
             <SchemaCheckerClient />
           </div>
         </div>

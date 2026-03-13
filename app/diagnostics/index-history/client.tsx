@@ -52,6 +52,12 @@ export default function IndexHistoryClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!url) return;
+        let targetUrl = url;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
+        }
+        setUrl(targetUrl);
         setLoading(true); setError(""); setLastChecked(null);
         try {
             let checkUrl = url.trim();

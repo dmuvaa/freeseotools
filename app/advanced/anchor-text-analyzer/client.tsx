@@ -20,6 +20,7 @@ export default function AnchorTextAnalyzerClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+
         setLoading(true); setError(""); setResult(null);
         try {
             const res = await fetch("/api/tools/anchor-text", {

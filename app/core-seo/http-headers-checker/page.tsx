@@ -58,7 +58,7 @@ export default function HttpHeadersPage() {
                     backgroundSize: '40px 40px'
                 }} />
 
-                <div className="relative container mx-auto max-w-4xl px-6 text-center">
+                <div className="relative container mx-auto max-w-7xl px-6 text-center">
                     <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-8 text-foreground">
                         HTTP Headers
                         <span className="block text-indigo-600 dark:text-indigo-400 mt-2 text-2xl md:text-4xl font-bold italic tracking-tighter">Response Packet Inspector</span>
@@ -67,7 +67,7 @@ export default function HttpHeadersPage() {
                         Every server response carries hidden metadata that dictates security, caching, and performance. Inspect the raw packet headers to ensure your infrastructure is optimized.
                     </p>
 
-                    <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full max-w-4xl mx-auto ring-4 ring-indigo-500/5 transition-all">
+                    <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full mx-auto ring-4 ring-indigo-500/5 transition-all">
                         <HttpHeadersClient />
                     </div>
                 </div>
@@ -75,7 +75,7 @@ export default function HttpHeadersPage() {
 
             <div className="bg-background">
                 {/* How it Works */}
-                <section className="px-6 py-12 md:py-16 container mx-auto max-w-4xl">
+                <section className="px-6 py-12 md:py-16 container mx-auto max-w-7xl">
                     <div className="text-center mb-20 px-4">
                         <h2 className="text-3xl md:text-5xl font-black text-foreground mb-8 uppercase tracking-tighter">The Packet Inspection Workflow</h2>
                         <div className="h-1 w-24 bg-indigo-600 mx-auto" />

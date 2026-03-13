@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { MdSearch, MdCheckCircle, MdDns, MdSecurity } from "react-icons/md";
-import { BiErrorCircle } from "react-icons/bi";
+import { MdSearch, MdCheckCircle, MdDns, MdSecurity, MdContentCopy } from "react-icons/md";
+import { BiErrorCircle, BiCheckDouble } from "react-icons/bi";
+import Card from "@/components/ui/Card";
 
 interface HeaderData {
     name: string;
@@ -37,6 +38,12 @@ export default function HttpHeadersChecker() {
         e.preventDefault();
         if (!url) return;
 
+        let targetUrl = url;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
+        }
+        setUrl(targetUrl);
+
         setLoading(true);
         setResult(null);
 
@@ -44,7 +51,7 @@ export default function HttpHeadersChecker() {
             const res = await fetch("/api/tools/http-headers", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url: targetUrl }),
             });
             const data = await res.json();
             setResult(data);
@@ -55,9 +62,17 @@ export default function HttpHeadersChecker() {
         }
     };
 
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        // Simple visual feedback could be added here if needed, but for now we rely on the button state or simplicity
+    };
+
+    const securityScore = result?.securityHeaders?.filter(sh => sh.present).length || 0;
+    const totalSecurityHeaders = result?.securityHeaders?.length || 0;
+
     return (
         <div className="w-full">
-            <div className="container mx-auto max-w-5xl">
+            <div className="container mx-auto max-w-7xl">
                 <form onSubmit={analyzeHeaders} className="mt-2 flex flex-col sm:flex-row gap-4 mb-8">
                     <input
                         type="text"
@@ -101,82 +116,120 @@ export default function HttpHeadersChecker() {
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface-1/50 backdrop-blur-md p-6 rounded-2xl border border-border gap-6 shadow-xl relative overflow-hidden group">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-indigo-600" />
                                     <div>
-                                        <h3 className="font-mono text-sm font-bold truncate max-w-md text-foreground-subtle group-hover:text-indigo-500 transition-colors" title={result.url}>{result.url}</h3>
+                                        <h3 className="font-mono text-sm font-bold truncate max-w-md text-foreground-subtle group-hover:text-foreground transition-colors" title={result.url}>{result.url}</h3>
                                         <div className="flex items-center gap-3 mt-2">
-                                            <span className={`inline-flex items-center gap-2 rounded-lg px-3 py-1 text-[11px] font-black tracking-widest border uppercase ${result.status === 200 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                                            <span className={`inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs font-black tracking-widest border uppercase ${result.status === 200 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
                                                 result.status?.toString().startsWith('3') ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
                                                 }`}>
                                                 HTTP {result.status} {result.statusText}
                                             </span>
-                                            {result.server && (
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-foreground-muted flex items-center gap-2 bg-surface-2 px-3 py-1 rounded-full border border-border">
-                                                    <MdDns className="size-4 text-indigo-500" /> {result.server}
+                                                    <MdDns className="size-4 text-foreground/50" /> {result.server}
                                                 </span>
-                                            )}
                                         </div>
                                     </div>
                                     <div className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground-muted bg-surface-2 px-4 py-2 rounded-xl border border-border shadow-inner">
-                                        <span className="opacity-50">MIME:</span> <span className="text-indigo-500">{result.contentType || "Binary/Unknown"}</span>
+                                        <span className="opacity-50">MIME:</span> <span className="text-foreground">{result.contentType || "Binary/Unknown"}</span>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    {/* Security Headers */}
-                                    <div className="rounded-[2rem] border border-border bg-surface-1 overflow-hidden h-fit shadow-2xl">
-                                        <div className="border-b border-border bg-surface-2 px-8 py-5 flex justify-between items-center bg-gradient-to-r from-surface-2 to-surface-1">
-                                            <h3 className="font-black uppercase text-xs tracking-[0.2em] flex items-center gap-3 text-foreground-subtle">
-                                                <MdSecurity className="size-5 text-indigo-500" />
-                                                Security Protocol
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                    {/* Security Headers Summary */}
+                                    <div className="lg:col-span-4 space-y-6">
+                                        <Card className="p-8 border-border bg-surface-1 shadow-2xl relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                                <MdSecurity className="size-24" />
+                                            </div>
+                                            <h3 className="font-black uppercase text-[10px] tracking-[0.2em] text-foreground-muted mb-6 flex items-center gap-2">
+                                                <MdSecurity className="size-4 text-indigo-500" /> Security Posture
                                             </h3>
-                                        </div>
-                                        <div className="divide-y divide-border">
-                                            {result.securityHeaders?.map((sh, i) => (
-                                                <div key={i} className="p-6 hover:bg-surface-2/30 transition-all group">
-                                                    <div className="flex items-center gap-3 mb-2">
+                                            
+                                            <div className="flex items-baseline gap-2 mb-2">
+                                                <span className="text-6xl font-black tabular-nums tracking-tighter text-foreground">{securityScore}</span>
+                                                <span className="text-xl font-bold text-foreground-muted">/ {totalSecurityHeaders}</span>
+                                            </div>
+                                            <p className="text-xs font-bold text-foreground-muted uppercase tracking-widest mb-8">Headers Present</p>
+
+                                            <div className="space-y-3">
+                                                {result.securityHeaders?.map((sh, i) => (
+                                                    <div key={i} className="flex items-center justify-between group/item">
+                                                        <span className={`text-xs font-bold uppercase tracking-tight transition-colors ${sh.present ? 'text-foreground' : 'text-foreground-muted opacity-50'}`}>
+                                                            {sh.name}
+                                                        </span>
                                                         {sh.present ? (
-                                                            <MdCheckCircle className="size-5 text-emerald-500" />
+                                                            <BiCheckDouble className="size-5 text-emerald-500" />
                                                         ) : (
-                                                            <BiErrorCircle className="size-5 text-amber-500 animate-pulse" />
+                                                            <div className="size-1.5 rounded-full bg-rose-500 animate-pulse" />
                                                         )}
-                                                        <strong className="font-mono text-xs font-black uppercase tracking-tighter text-foreground group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{sh.name}</strong>
-                                                        {!sh.present && <span className="px-2 py-0.5 rounded text-[8px] font-black bg-error text-white ml-auto uppercase tracking-widest shadow-lg shadow-error/20">Missing</span>}
                                                     </div>
-                                                    <p className="text-[11px] text-foreground-muted mb-3 leading-relaxed font-medium pl-8">{sh.description}</p>
-                                                    {sh.present && (
-                                                        <div className="bg-surface-2 p-4 rounded-xl text-[10px] font-mono break-all text-indigo-600 dark:text-indigo-400 border border-border mt-2 shadow-inner group-hover:border-indigo-500/30 transition-colors">
-                                                            {sh.value}
-                                                        </div>
-                                                    )}
+                                                ))}
+                                            </div>
+                                        </Card>
+
+                                            {result.securityHeaders?.filter(sh => !sh.present).map((sh, i) => (
+                                                <div key={i} className="p-5 rounded-2xl border border-rose-500/10 bg-rose-500/[0.02] flex gap-4">
+                                                    <BiErrorCircle className="size-5 text-rose-500 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <h4 className="text-xs font-black uppercase text-rose-600 tracking-widest mb-1">{sh.name} Missing</h4>
+                                                        <p className="text-xs text-foreground-muted leading-relaxed font-medium">{sh.description}</p>
+                                                    </div>
                                                 </div>
                                             ))}
-                                        </div>
                                     </div>
 
-                                    {/* All Headers Table */}
-                                    <div className="rounded-[2rem] border border-border bg-surface-1 overflow-hidden h-fit shadow-2xl">
-                                        <div className="border-b border-border bg-surface-2 px-8 py-5 flex justify-between items-center bg-gradient-to-r from-surface-2 to-surface-1">
-                                            <h3 className="font-black uppercase text-xs tracking-[0.2em] text-foreground-subtle">
-                                                Packet Manifest
-                                            </h3>
-                                            <span className="px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-black shadow-lg shadow-indigo-500/20">{result.headers?.length} Lines</span>
-                                        </div>
-                                        <div className="overflow-x-auto max-h-[600px] overflow-y-auto custom-scrollbar">
-                                            <table className="w-full text-left">
-                                                <thead className="bg-surface-2 text-foreground-muted sticky top-0 shadow-sm border-b border-border">
-                                                    <tr>
-                                                        <th className="px-8 py-4 font-black uppercase tracking-widest text-[10px] w-1/3">Key</th>
-                                                        <th className="px-8 py-4 font-black uppercase tracking-widest text-[10px] w-2/3">Value</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-border">
-                                                    {result.headers?.map((header, i) => (
-                                                        <tr key={i} className="hover:bg-indigo-500/5 transition-colors group">
-                                                            <td className="px-8 py-4 font-mono text-[10px] font-black text-foreground align-top group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{header.name}</td>
-                                                            <td className="px-8 py-4 font-mono text-[10px] break-all text-indigo-600 dark:text-indigo-400 align-top leading-relaxed">{header.value}</td>
+                                    {/* All Headers Manifest */}
+                                    <div className="lg:col-span-8">
+                                        <div className="rounded-[2rem] border border-border bg-surface-1 overflow-hidden shadow-2xl">
+                                            <div className="border-b border-border bg-surface-2 px-8 py-6 flex justify-between items-center bg-gradient-to-r from-surface-2 to-surface-1">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="size-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                                                        <MdDns className="size-6" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-black uppercase text-xs tracking-[0.2em] text-foreground">
+                                                            Packet Manifest
+                                                        </h3>
+                                                        <p className="text-[10px] text-foreground-muted font-bold uppercase tracking-widest mt-0.5">Response Headers</p>
+                                                    </div>
+                                                </div>
+                                                <span className="px-4 py-1.5 rounded-full bg-surface-2 text-foreground-muted text-[10px] font-black border border-border shadow-inner">
+                                                    {result.headers?.length} ATTRIBUTES
+                                                </span>
+                                            </div>
+                                            <div className="overflow-x-auto max-h-[800px] overflow-y-auto custom-scrollbar">
+                                                <table className="w-full text-left border-collapse">
+                                                    <thead className="bg-surface-2/50 text-foreground-muted sticky top-0 backdrop-blur-md z-10 border-b border-border">
+                                                        <tr>
+                                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[9px] w-1/3">Field Name</th>
+                                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[9px] w-2/3">Data Content</th>
                                                         </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-border">
+                                                        {result.headers?.map((header, i) => (
+                                                            <tr key={i} className="hover:bg-indigo-500/[0.02] transition-colors group">
+                                                                <td className="px-8 py-6 align-top">
+                                                                    <div className="font-mono text-xs font-black text-foreground-subtle tracking-tight group-hover:text-foreground transition-colors">
+                                                                        {header.name}
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-8 py-6 align-top">
+                                                                    <div className="flex flex-col gap-2">
+                                                                        <div className="font-mono text-sm break-all text-foreground leading-relaxed font-medium">
+                                                                            {header.value}
+                                                                        </div>
+                                                                        <button 
+                                                                            onClick={() => copyToClipboard(header.value)}
+                                                                            className="w-fit flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-foreground-muted hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                                                        >
+                                                                            <MdContentCopy className="size-3" /> Copy Value
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

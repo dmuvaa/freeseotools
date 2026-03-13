@@ -10,7 +10,16 @@ export default function KeywordCannibalizationClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        const urls = urlsText.split("\n").map(u => u.trim()).filter(Boolean);
+        
+        const rawUrls = urlsText.split("\n").map(u => u.trim()).filter(Boolean);
+        if (rawUrls.length < 2) return setError("Please enter at least 2 URLs");
+        
+        const urls = rawUrls.map(u => {
+            if (!/^https?:\/\//i.test(u)) return 'https://' + u;
+            return u;
+        });
+        setUrlsText(urls.join("\n"));
+
         setLoading(true); setError(""); setResult(null);
         try {
             const res = await fetch("/api/tools/keyword-cannibalization", {

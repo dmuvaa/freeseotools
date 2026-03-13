@@ -28,6 +28,12 @@ export default function RobotsTxtTester() {
     const analyzeRobotsTxt = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!domain) return;
+        let tDomain = domain;
+        if (!/^https?:\/\//i.test(tDomain)) {
+            tDomain = 'https://' + tDomain;
+        }
+        setDomain(tDomain);
+        if (!domain) return;
 
         setLoading(true);
         setResult(null);

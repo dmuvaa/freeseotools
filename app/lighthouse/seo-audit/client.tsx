@@ -167,12 +167,18 @@ export default function SEOAuditClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!url) return;
+        let targetUrl = url;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
+        }
+        setUrl(targetUrl);
         setLoading(true); setError(""); setResult(null); setTab("All"); setExpandedIssueId(null); setLoadStep(0); setDetailTab("Overview");
         const timer = setInterval(() => setLoadStep(s => Math.min(s + 1, STEPS.length - 1)), 2000);
         try {
             const res = await fetch("/api/tools/seo-audit", {
                 method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url: targetUrl }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);

@@ -59,7 +59,7 @@ export default function SerpPreviewPage() {
                     backgroundSize: "40px 40px"
                 }} />
 
-                <div className="relative container mx-auto max-w-4xl px-6">
+                <div className="relative container mx-auto max-w-7xl px-6">
                     <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 text-foreground">
                         SERP Preview Tool
                         <span className="block text-blue-600 dark:text-blue-400 mt-2 text-2xl md:text-4xl font-bold">Visibility is Your First Impression</span>
@@ -68,7 +68,7 @@ export default function SerpPreviewPage() {
                         Preview how your pages will look in Google's search results on both desktop and mobile devices. Optimize for maximum clicks.
                     </p>
 
-                    <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full max-w-4xl mx-auto ring-4 ring-blue-500/5 transition-all">
+                    <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full mx-auto ring-4 ring-blue-500/5 transition-all">
                         <SerpPreviewToolClient />
                     </div>
                 </div>
@@ -76,7 +76,7 @@ export default function SerpPreviewPage() {
 
             <div className="bg-background">
                 {/* Visual Impact Section */}
-                <section className="px-6 py-12 md:py-16 container mx-auto max-w-5xl">
+                <section className="px-6 py-12 md:py-16 container mx-auto max-w-7xl">
                     <div className="flex flex-col md:flex-row gap-16 items-center">
                         <div className="md:w-1/2">
                             <div className="size-16 rounded-3xl bg-blue-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-blue-500/20">
@@ -133,7 +133,7 @@ export default function SerpPreviewPage() {
                 </section>
 
                 {/* Deep Dive: Mobile vs Desktop */}
-                <section className="px-6 py-16 container mx-auto max-w-4xl">
+                <section className="px-6 py-16 container mx-auto max-w-7xl">
                     <div className="bg-surface-2 border border-border rounded-[3rem] p-10 md:p-20 text-foreground relative overflow-hidden shadow-2xl">
                         <div className="relative z-10 text-center">
                             <h3 className="text-3xl md:text-5xl font-extrabold mb-8 text-foreground">Dual-Screen Optimization</h3>

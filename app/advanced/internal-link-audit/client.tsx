@@ -13,12 +13,18 @@ export default function InternalLinkAuditClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!domain) return;
+        let tDomain = domain;
+        if (!/^https?:\/\//i.test(tDomain)) {
+            tDomain = 'https://' + tDomain;
+        }
+        setDomain(tDomain);
         setLoading(true); setError(""); setResult(null);
         try {
             const res = await fetch("/api/tools/internal-link-audit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ domain, limit }),
+                body: JSON.stringify({ domain: tDomain, limit }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);

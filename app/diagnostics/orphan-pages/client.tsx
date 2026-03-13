@@ -10,11 +10,17 @@ export default function OrphanPagesClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!url) return;
+        let targetUrl = url;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
+        }
+        setUrl(targetUrl);
         setLoading(true); setError(""); setResult(null);
         try {
             const res = await fetch("/api/tools/orphan-pages", {
                 method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url: targetUrl }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);

@@ -9,8 +9,16 @@ export default function IndexabilityCheckerClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        const urls = urlsText.split("\n").map(u => u.trim()).filter(Boolean);
-        if (urls.length === 0) return setError("Paste at least one URL");
+        
+        const rawUrls = urlsText.split("\n").map(u => u.trim()).filter(Boolean);
+        if (rawUrls.length === 0) return setError("Paste at least one URL");
+        
+        const urls = rawUrls.map(u => {
+            if (!/^https?:\/\//i.test(u)) return 'https://' + u;
+            return u;
+        });
+        setUrlsText(urls.join("\n"));
+
         setLoading(true); setError(""); setResult(null);
         try {
             const res = await fetch("/api/tools/indexability", {

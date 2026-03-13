@@ -33,6 +33,12 @@ export default function SitemapAnalyzer() {
     const analyzeSitemap = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!sitemapUrl) return;
+        let tSitemapUrl = sitemapUrl;
+        if (!/^https?:\/\//i.test(tSitemapUrl)) {
+            tSitemapUrl = 'https://' + tSitemapUrl;
+        }
+        setSitemapUrl(tSitemapUrl);
+        if (!sitemapUrl) return;
 
         setLoading(true);
         setResult(null);
@@ -41,7 +47,7 @@ export default function SitemapAnalyzer() {
             const res = await fetch("/api/tools/sitemap", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: sitemapUrl }),
+                body: JSON.stringify({ url: tSitemapUrl }),
             });
             const data = await res.json();
             setResult(data);

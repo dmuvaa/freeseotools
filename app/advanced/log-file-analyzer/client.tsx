@@ -12,6 +12,7 @@ export default function LogFileAnalyzerClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+
         if (!file) return setError("Please upload a log file");
         setLoading(true); setError(""); setResult(null);
         try {

@@ -27,6 +27,12 @@ export default function HeadingStructureAnalyzer() {
         e.preventDefault();
         if (!url) return;
 
+        let targetUrl = url;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
+        }
+        setUrl(targetUrl);
+
         setLoading(true);
         setResult(null);
 
@@ -34,7 +40,7 @@ export default function HeadingStructureAnalyzer() {
             const res = await fetch("/api/tools/headings", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url: targetUrl }),
             });
             const data = await res.json();
             setResult(data);

@@ -10,11 +10,23 @@ export default function CrawlBudgetClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!domain) return;
+        
+        let tDomain = domain;
+        if (!/^https?:\/\//i.test(tDomain)) tDomain = 'https://' + tDomain;
+        setDomain(tDomain);
+
+        let tSitemapUrl = sitemapUrl;
+        if (tSitemapUrl && !/^https?:\/\//i.test(tSitemapUrl)) {
+            tSitemapUrl = 'https://' + tSitemapUrl;
+            setSitemapUrl(tSitemapUrl);
+        }
+
         setLoading(true); setError(""); setResult(null);
         try {
             const res = await fetch("/api/tools/crawl-budget", {
                 method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ domain, sitemapUrl }),
+                body: JSON.stringify({ domain: tDomain, sitemapUrl: tSitemapUrl }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);

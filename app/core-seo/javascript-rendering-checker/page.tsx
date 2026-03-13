@@ -18,7 +18,7 @@ export default function JavascriptRenderingCheckerLandingPage() {
           backgroundSize: '40px 40px'
         }} />
 
-        <div className="relative container mx-auto max-w-4xl px-6 text-center">
+        <div className="relative container mx-auto max-w-7xl px-6 text-center">
           <h1 className="mb-6 text-4xl md:text-6xl font-extrabold tracking-tight leading-tight text-foreground">
             Raw HTML <br />
             <span className="text-purple-600 dark:text-purple-400 mt-2 text-2xl md:text-4xl font-bold">vs. Rendered DOM.</span>
@@ -28,13 +28,13 @@ export default function JavascriptRenderingCheckerLandingPage() {
             See exactly what search bots miss when they don't execute your JavaScript. Identify critical content and links hidden behind client-side rendering.
           </p>
 
-          <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full max-w-4xl mx-auto ring-4 ring-purple-500/5 transition-all">
+          <div className="bg-surface-1 rounded-2xl border border-border p-8 shadow-2xl w-full mx-auto ring-4 ring-purple-500/5 transition-all">
             <JavascriptRenderingCheckerClient />
           </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 max-w-4xl py-12 md:py-16 space-y-20">
+      <div className="container mx-auto px-4 max-w-7xl py-12 md:py-16 space-y-20">
 
         {/* Why it Matters */}
         <section className="scroll-mt-20">

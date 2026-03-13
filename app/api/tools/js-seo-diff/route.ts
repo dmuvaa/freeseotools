@@ -22,6 +22,17 @@ function extractLinks(html: string, baseUrl: string): string[] {
     return [...new Set(links)];
 }
 
+function extractSEO(html: string): { title: string; description: string; robots: string; canonical: string; h1Count: number } {
+    const $ = cheerio.load(html);
+    return {
+        title: $("title").text().trim(),
+        description: $("meta[name='description']").attr("content") || "",
+        robots: $("meta[name='robots']").attr("content") || "",
+        canonical: $("link[rel='canonical']").attr("href") || "",
+        h1Count: $("h1").length
+    };
+}
+
 function extractTextSnippets(html: string): string[] {
     const $ = cheerio.load(html);
     $("script, style, noscript").remove();
@@ -33,12 +44,9 @@ function extractTextSnippets(html: string): string[] {
     return snippets;
 }
 
-export async function POST(req: NextRequest) {
+export async function performJsRenderingAnalysis(url: string) {
     let browser = null;
     try {
-        const { url } = await req.json();
-        if (!url) return NextResponse.json({ error: "URL is required" }, { status: 400 });
-
         let finalUrl = url.trim();
         if (!finalUrl.startsWith("http")) finalUrl = "https://" + finalUrl;
 
@@ -77,15 +85,21 @@ export async function POST(req: NextRequest) {
         const union = new Set([...rawWordSet, ...renderedWordSet]).size;
         const similarity = union > 0 ? Math.round((intersection / union) * 100) : 100;
 
-        return NextResponse.json({
+        // SEO Comparison
+        const rawSEO = extractSEO(rawHtml);
+        const renderedSEO = extractSEO(renderedHtml);
+
+        return {
             url: finalUrl,
             raw: {
                 wordCount: rawWords.length,
                 linkCount: rawLinks.length,
+                seo: rawSEO
             },
             rendered: {
                 wordCount: renderedWords.length,
                 linkCount: renderedLinks.length,
+                seo: renderedSEO
             },
             diff: {
                 wordCountDiff: renderedWords.length - rawWords.length,
@@ -94,10 +108,29 @@ export async function POST(req: NextRequest) {
                 jsOnlyContent,
                 missingFromRaw,
                 similarity,
+                seoDiff: {
+                    titleMatch: rawSEO.title === renderedSEO.title,
+                    descriptionMatch: rawSEO.description === renderedSEO.description,
+                    robotsMatch: rawSEO.robots === renderedSEO.robots,
+                    canonicalMatch: rawSEO.canonical === renderedSEO.canonical,
+                    h1Match: rawSEO.h1Count === renderedSEO.h1Count,
+                }
             },
-        });
+        };
     } catch (e: any) {
         if (browser) { try { await (browser as any).close(); } catch { } }
+        throw e;
+    }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const { url } = await req.json();
+        if (!url) return NextResponse.json({ error: "URL is required" }, { status: 400 });
+
+        const data = await performJsRenderingAnalysis(url);
+        return NextResponse.json(data);
+    } catch (e: any) {
         return NextResponse.json({ error: e.message || "Analysis failed" }, { status: 500 });
     }
 }

@@ -41,11 +41,20 @@ export default function CwvCompareClient() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        
+        let tUrlA = urlA;
+        if (!/^https?:\/\//i.test(tUrlA)) tUrlA = 'https://' + tUrlA;
+        setUrlA(tUrlA);
+
+        let tUrlB = urlB;
+        if (!/^https?:\/\//i.test(tUrlB)) tUrlB = 'https://' + tUrlB;
+        setUrlB(tUrlB);
+
         setLoading(true); setError(""); setResult(null);
         try {
             const res = await fetch("/api/tools/cwv-compare", {
                 method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ urlA, urlB }),
+                body: JSON.stringify({ urlA: tUrlA, urlB: tUrlB }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);

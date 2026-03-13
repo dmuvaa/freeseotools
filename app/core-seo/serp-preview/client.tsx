@@ -42,12 +42,18 @@ export default function SerpPreviewTool() {
     const fetchFromUrl = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!url) return;
+
+        let targetUrl = url;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
+        }
+        setUrl(targetUrl);
         setLoading(true);
         try {
             const res = await fetch("/api/tools/meta-tags", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url: targetUrl }),
             });
             const data = await res.json();
             if (data.success) {
@@ -65,7 +71,7 @@ export default function SerpPreviewTool() {
 
     return (
         <div className="w-full">
-            <div className="container mx-auto max-w-5xl">
+        <div className="w-full">
                 <form onSubmit={fetchFromUrl} className="mt-2 flex flex-col sm:flex-row gap-4 mb-8">
                     <input
                         type="text"
