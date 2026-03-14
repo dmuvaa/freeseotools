@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import { chromium } from "playwright";
+import puppeteer from "puppeteer-core";
+import { getLaunchOptions } from "@/lib/analysis/browser-config";
 
 const PAGINATION_PARAMS = new Set([
     "page", "p", "pg", "pagenum", "pagenumber", "pageNo", "page_id",
@@ -55,10 +56,11 @@ export async function POST(req: NextRequest) {
             } catch { }
         });
 
-        // 4. Infinite scroll detection via Playwright
+        // 4. Infinite scroll detection via Puppeteer
         let hasInfiniteScroll = false;
         try {
-            browser = await chromium.launch({ args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+            const options = await getLaunchOptions();
+            browser = await puppeteer.launch(options);
             const page = await browser.newPage();
             await page.goto(finalUrl, { waitUntil: "domcontentloaded", timeout: 20000 });
             hasInfiniteScroll = await page.evaluate(() => {

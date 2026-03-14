@@ -33,6 +33,6 @@ export const getLaunchOptions = async () => {
         args: isProd ? chromium.args : ['--no-sandbox', '--disable-setuid-sandbox'],
         defaultViewport: { width: 1280, height: 800 },
         executablePath: executablePath,
-        headless: isProd ? chromium.headless : true,
+        headless: isProd ? true : "shell",
     } as any;
 };

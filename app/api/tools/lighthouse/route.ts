@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { launch } from "chrome-launcher";
 // Dynamic import for ESM lighthouse
 const getLighthouse = () => import("lighthouse").then((m) => m.default);
-import { chromium } from "playwright";
+import { getExecutablePath } from "@/lib/analysis/browser-config";
 
 const CATEGORY_MAP: Record<string, string> = {
     performance: "performance",
@@ -27,8 +27,8 @@ export async function POST(req: NextRequest) {
 
         const validCategories = categories.filter((c: string) => CATEGORY_MAP[c]);
 
-        // Use Playwright's bundled Chromium executable
-        const executablePath = chromium.executablePath();
+        // Use our centralized browser config to get the correct executable path
+        const executablePath = await getExecutablePath();
 
         chrome = await launch({
             chromePath: executablePath,

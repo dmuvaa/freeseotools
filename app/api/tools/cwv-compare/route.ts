@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { launch } from "chrome-launcher";
 const getLighthouse = () => import("lighthouse").then((m) => m.default);
-import { chromium } from "playwright";
+import { getExecutablePath } from "@/lib/analysis/browser-config";
 
 async function runLighthouse(url: string, strategy: "mobile" | "desktop") {
-    const executablePath = chromium.executablePath();
+    const executablePath = await getExecutablePath();
     const chrome = await launch({
         chromePath: executablePath,
         chromeFlags: ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
