@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import { chromium } from "playwright";
+import puppeteer from "puppeteer-core";
+import { getLaunchOptions } from "@/lib/analysis/browser-config";
+
+export const runtime = "nodejs";
 
 function extractWords(html: string): string[] {
     const $ = cheerio.load(html);
@@ -46,6 +49,7 @@ function extractTextSnippets(html: string): string[] {
 
 export async function performJsRenderingAnalysis(url: string) {
     let browser = null;
+    let renderedHtml: string | null = null;
     try {
         let finalUrl = url.trim();
         if (!finalUrl.startsWith("http")) finalUrl = "https://" + finalUrl;
@@ -57,22 +61,52 @@ export async function performJsRenderingAnalysis(url: string) {
         });
         const rawHtml = await rawRes.text();
 
-        // 2. Rendered HTML via Playwright
-        browser = await chromium.launch({ args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+        // 2. Rendered HTML via Puppeteer
+        const options = await getLaunchOptions();
+        browser = await puppeteer.launch(options);
         const page = await browser.newPage();
-        await page.goto(finalUrl, { waitUntil: "networkidle", timeout: 30000 });
-        await page.waitForTimeout(2000);
-        const renderedHtml = await page.content();
-        await browser.close();
-        browser = null;
+        await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        
+        try {
+            // Stage 1: Attempt standard navigation
+            await page.goto(finalUrl, { 
+                waitUntil: "domcontentloaded", 
+                timeout: 20000 
+            });
+
+            // Stage 2: Wait for network activity to settle (best effort)
+            try {
+                await page.waitForNetworkIdle({ idleTime: 500, timeout: 5000 });
+            } catch {
+                // Ignore network idle timeout, we have domcontentloaded
+            }
+
+            // Small buffer for potential JS execution
+            await new Promise(r => setTimeout(r, 1000));
+            renderedHtml = await page.content();
+        } catch (gotoError: any) {
+            console.warn(`Puppeteer navigation warning for ${finalUrl}: ${gotoError.message}`);
+            // Fallback: try to get content one last time if the page/frame still exists
+            try {
+                if (!page.isClosed()) {
+                    renderedHtml = await page.content();
+                }
+            } catch { }
+            
+            // If we still don't have renderedHtml, we can't proceed with rendering analysis
+            if (!renderedHtml) throw gotoError;
+        } finally {
+            if (browser) await browser.close();
+            browser = null;
+        }
 
         // Analysis
         const rawWords = extractWords(rawHtml);
-        const renderedWords = extractWords(renderedHtml);
+        const renderedWords = extractWords(renderedHtml!);
         const rawLinks = extractLinks(rawHtml, finalUrl);
-        const renderedLinks = extractLinks(renderedHtml, finalUrl);
+        const renderedLinks = extractLinks(renderedHtml!, finalUrl);
         const rawSnippets = new Set(extractTextSnippets(rawHtml));
-        const renderedSnippets = extractTextSnippets(renderedHtml);
+        const renderedSnippets = extractTextSnippets(renderedHtml!);
 
         const jsOnlyLinks = renderedLinks.filter(l => !rawLinks.includes(l)).slice(0, 50);
         const jsOnlyContent = renderedSnippets.filter(s => !rawSnippets.has(s)).slice(0, 20);
@@ -117,9 +151,8 @@ export async function performJsRenderingAnalysis(url: string) {
                 }
             },
         };
-    } catch (e: any) {
+    } finally {
         if (browser) { try { await (browser as any).close(); } catch { } }
-        throw e;
     }
 }
 

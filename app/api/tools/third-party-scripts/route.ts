@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chromium } from "playwright";
+import puppeteer from "puppeteer-core";
+import { getLaunchOptions } from "@/lib/analysis/browser-config";
+
+export const runtime = "nodejs";
 
 const CATEGORY_PATTERNS: Record<string, RegExp> = {
     Analytics: /google-analytics|googletagmanager|gtag|segment|mixpanel|amplitude|hotjar|heap|clarity|posthog|plausible|fathom/i,
@@ -28,8 +31,11 @@ export async function POST(req: NextRequest) {
         if (!finalUrl.startsWith("http")) finalUrl = "https://" + finalUrl;
         const origin = new URL(finalUrl).hostname;
 
-        browser = await chromium.launch({ args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+        const options = await getLaunchOptions();
+        browser = await puppeteer.launch(options);
         const page = await browser.newPage();
+        await page.setRequestInterception(true);
+        page.on('request', (request) => request.continue());
 
         const requests: Array<{ url: string; sizeBytes: number; type: string; domain: string; category: string }> = [];
 
@@ -38,7 +44,7 @@ export async function POST(req: NextRequest) {
             try {
                 const reqDomain = new URL(reqUrl).hostname;
                 if (reqDomain === origin || reqDomain.endsWith(`.${origin}`)) return; // first-party
-                const body = await response.body();
+                const body = await response.buffer();
                 const contentType = response.headers()["content-type"] || "";
                 const type = contentType.includes("javascript") ? "script"
                     : contentType.includes("css") ? "style"
@@ -55,7 +61,18 @@ export async function POST(req: NextRequest) {
             } catch { }
         });
 
-        await page.goto(finalUrl, { waitUntil: "networkidle", timeout: 30000 });
+        try {
+            await page.goto(finalUrl, { 
+                waitUntil: "domcontentloaded", 
+                timeout: 25000 
+            });
+            try {
+                await page.waitForNetworkIdle({ idleTime: 500, timeout: 5000 });
+            } catch { }
+        } catch (e) {
+            console.warn(`Third-Party Scripts navigation warning for ${finalUrl}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+        
         await browser.close();
         browser = null;
 
@@ -84,8 +101,7 @@ export async function POST(req: NextRequest) {
                 .slice(0, 40)
                 .map(r => ({ url: r.url, domain: r.domain, category: r.category, sizeKb: Math.round(r.sizeBytes / 1024 * 10) / 10, type: r.type })),
         });
-    } catch (e: any) {
+    } finally {
         if (browser) { try { await (browser as any).close(); } catch { } }
-        return NextResponse.json({ error: e.message || "Analysis failed" }, { status: 500 });
     }
 }

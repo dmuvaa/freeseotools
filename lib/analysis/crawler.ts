@@ -1,4 +1,6 @@
-import { chromium, Browser, Page } from 'playwright';
+import chromium from "@sparticuz/chromium";
+import puppeteer, { Browser } from "puppeteer-core";
+import { getLaunchOptions } from "./browser-config";
 
 interface FetchResult {
     html: string;
@@ -11,9 +13,8 @@ export class Crawler {
 
     async init() {
         if (!this.browser) {
-            this.browser = await chromium.launch({
-                args: ['--no-sandbox', '--disable-setuid-sandbox'], // Safer for containerized envs
-            });
+            const options = await getLaunchOptions();
+            this.browser = await puppeteer.launch(options);
         }
     }
 
@@ -27,26 +28,30 @@ export class Crawler {
     async fetchPage(url: string, jsEnabled: boolean = true): Promise<FetchResult> {
         if (!this.browser) await this.init();
 
-        const context = await this.browser!.newContext({
-            javaScriptEnabled: jsEnabled,
-            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        });
+        const page = await this.browser!.newPage();
 
-        const page = await context.newPage();
+        // Standard user agent for SEO tools
+        await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
+        if (!jsEnabled) {
+            await page.setJavaScriptEnabled(false);
+        }
 
         // Block heavy resources
-        await page.route('**/*', (route) => {
-            const request = route.request();
-            if (['image', 'media', 'font', 'stylesheet'].includes(request.resourceType())) {
-                return route.abort();
+        await page.setRequestInterception(true);
+        page.on('request', (request) => {
+            const resourceType = request.resourceType();
+            if (['image', 'media', 'font', 'stylesheet'].includes(resourceType)) {
+                request.abort();
+            } else {
+                request.continue();
             }
-            return route.continue();
         });
 
         try {
             const response = await page.goto(url, {
-                waitUntil: jsEnabled ? 'networkidle' : 'domcontentloaded',
-                timeout: 15000, // 15s timeout
+                waitUntil: jsEnabled ? 'networkidle2' : 'domcontentloaded',
+                timeout: 15000,
             });
 
             if (!response) {
@@ -57,11 +62,11 @@ export class Crawler {
             const status = response.status();
             const finalUrl = page.url();
 
-            await context.close();
+            await page.close();
 
             return { html, status, url: finalUrl };
         } catch (error) {
-            await context.close();
+            if (page) await page.close();
             throw error;
         }
     }

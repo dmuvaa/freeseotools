@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chromium } from "playwright";
+import puppeteer from "puppeteer-core";
+import { getLaunchOptions } from "@/lib/analysis/browser-config";
+
+export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
     let browser = null;
@@ -11,8 +14,10 @@ export async function POST(req: NextRequest) {
         if (!finalUrl.startsWith("http")) finalUrl = "https://" + finalUrl;
         const origin = new URL(finalUrl).hostname;
 
-        browser = await chromium.launch({ args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+        const options = await getLaunchOptions();
+        browser = await puppeteer.launch(options);
         const page = await browser.newPage();
+        await page.setRequestInterception(true);
 
         // Track all JS resources
         const scripts: Array<{
@@ -27,7 +32,7 @@ export async function POST(req: NextRequest) {
             const url = response.url();
             if (!url.match(/\.js(\?|$)/)) return;
             try {
-                const body = await response.body();
+                const body = await response.buffer();
                 const headers = response.headers();
                 const size = body.length;
                 const transferSize = parseInt(headers["content-length"] || "0", 10) || size;
@@ -43,7 +48,21 @@ export async function POST(req: NextRequest) {
             } catch { }
         });
 
-        await page.goto(finalUrl, { waitUntil: "networkidle", timeout: 30000 });
+        page.on('request', (request) => {
+            request.continue();
+        });
+
+        try {
+            await page.goto(finalUrl, { 
+                waitUntil: "domcontentloaded", 
+                timeout: 25000 
+            });
+            try {
+                await page.waitForNetworkIdle({ idleTime: 500, timeout: 5000 });
+            } catch { }
+        } catch (e) {
+            console.warn(`JS Bundle Analyzer navigation warning for ${finalUrl}: ${e instanceof Error ? e.message : String(e)}`);
+        }
 
         // Check which scripts in <head> are render-blocking
         const blockingUrls = await page.evaluate(() => {
@@ -81,8 +100,7 @@ export async function POST(req: NextRequest) {
                 isThirdParty: s.isThirdParty,
             })),
         });
-    } catch (e: any) {
+    } finally {
         if (browser) { try { await (browser as any).close(); } catch { } }
-        return NextResponse.json({ error: e.message || "Analysis failed" }, { status: 500 });
     }
 }
