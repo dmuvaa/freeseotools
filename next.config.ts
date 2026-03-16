@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Prevent Next.js from trying to bundle these native Node.js tools
   // They have ESM-only deep dependencies that can't be statically analysed by Turbopack
   serverExternalPackages: [
     "lighthouse",
@@ -9,8 +8,11 @@ const nextConfig: NextConfig = {
     "@paulirish/trace_engine",
     "puppeteer-core",
     "axe-core",
-    ...(process.env.VERCEL ? ["@sparticuz/chromium"] : []),
+    "@sparticuz/chromium",
   ],
+  outputFileTracingIncludes: {
+    "/**/*": ["./node_modules/@sparticuz/chromium/bin/**/*"],
+  },
 };
 
 export default nextConfig;
