@@ -27,8 +27,13 @@ export const getExecutablePath = async () => {
 
 export const getLaunchOptions = async () => {
     const executablePath = await getExecutablePath();
-    const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+    const isProd = process.env.NODE_ENV === 'production' || !!process.env.VERCEL || !!process.env.AWS_EXECUTION_ENV;
     
+    if (isProd) {
+        // Required for some serverless environments to prevent crashes
+        chromium.setGraphicsMode = false;
+    }
+
     return {
         args: isProd ? chromium.args : ['--no-sandbox', '--disable-setuid-sandbox'],
         defaultViewport: { width: 1280, height: 800 },

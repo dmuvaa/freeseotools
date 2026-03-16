@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     "@paulirish/trace_engine",
     "puppeteer-core",
     "axe-core",
+    ...(process.env.VERCEL ? ["@sparticuz/chromium"] : []),
   ],
 };
 
