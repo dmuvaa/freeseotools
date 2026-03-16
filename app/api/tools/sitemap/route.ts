@@ -74,8 +74,8 @@ export async function POST(req: Request) {
 
         const totalUrls = urlSet.length;
 
-        // We only check the status of the first 25 URLs to avoid long timeouts and rate limits
-        const checkLimit = 25;
+        // We only check the status of the first 50 URLs to avoid long timeouts and rate limits
+        const checkLimit = 50;
         const urlsToCheck = urlSet.slice(0, checkLimit);
         const parsedUrls = [];
         let validUrls = 0;
@@ -123,10 +123,10 @@ export async function POST(req: Request) {
             url: validUrl,
             success: true,
             summary: {
-                totalUrls,
-                checkedUrls: checkedResults.filter(u => !urlSet[0].isSitemap).length,
-                validUrls,
-                brokenUrls
+                total: totalUrls,
+                checked: checkedResults.filter(u => !urlSet[0]?.isSitemap).length,
+                valid: validUrls,
+                broken: brokenUrls
             },
             urls: finalUrls
         });

@@ -144,9 +144,9 @@ export default function SitemapAnalyzer() {
                                                                 <a href={u.loc} target="_blank" rel="noopener noreferrer" className="hover:underline">{u.loc}</a>
                                                             </td>
                                                             <td className="px-6 py-4 text-center whitespace-nowrap">
-                                                                <span className={`inline-flex items-center gap-1 rounded px-2.5 py-1 text-[10px] font-bold border ${u.status === 200 ? 'bg-success/10 text-success border-success/20' : 'bg-error/10 text-error border-error/20'}`}>
-                                                                    {u.status === 200 ? <MdCheckCircle className="size-3" /> : <MdLinkOff className="size-3" />}
-                                                                    {u.status || 'N/A'}
+                                                                <span className={`inline-flex items-center gap-1 rounded px-2.5 py-1 text-[10px] font-bold border ${u.status === 200 ? 'bg-success/10 text-success border-success/20' : !u.status ? 'bg-surface-3 text-foreground-muted border-border' : 'bg-error/10 text-error border-error/20'}`}>
+                                                                    {u.status === 200 ? <MdCheckCircle className="size-3" /> : !u.status ? <MdTimer className="size-3" /> : <MdLinkOff className="size-3" />}
+                                                                    {u.status || 'UNCHECKED'}
                                                                 </span>
                                                             </td>
                                                             <td className="px-6 py-4 font-mono text-[10px] text-foreground-muted whitespace-nowrap text-right">

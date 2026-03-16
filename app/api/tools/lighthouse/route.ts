@@ -81,14 +81,44 @@ export async function POST(req: NextRequest) {
             Object.entries(cats).map(([key, val]) => [key, Math.round((val.score ?? 0) * 100)])
         );
 
-        // Key vitals
+        // Key vitals with descriptions
         const vitals = {
-            lcp: { value: audits["largest-contentful-paint"]?.displayValue ?? "N/A", score: audits["largest-contentful-paint"]?.score ?? null },
-            fcp: { value: audits["first-contentful-paint"]?.displayValue ?? "N/A", score: audits["first-contentful-paint"]?.score ?? null },
-            cls: { value: audits["cumulative-layout-shift"]?.displayValue ?? "N/A", score: audits["cumulative-layout-shift"]?.score ?? null },
-            inp: { value: audits["interaction-to-next-paint"]?.displayValue ?? audits["total-blocking-time"]?.displayValue ?? "N/A", score: audits["interaction-to-next-paint"]?.score ?? audits["total-blocking-time"]?.score ?? null },
-            tbt: { value: audits["total-blocking-time"]?.displayValue ?? "N/A", score: audits["total-blocking-time"]?.score ?? null },
-            si: { value: audits["speed-index"]?.displayValue ?? "N/A", score: audits["speed-index"]?.score ?? null },
+            fcp: { 
+                label: "First Contentful Paint",
+                value: audits["first-contentful-paint"]?.displayValue ?? "N/A", 
+                score: audits["first-contentful-paint"]?.score ?? null,
+                description: "Marks the time at which the first text or image is painted."
+            },
+            lcp: { 
+                label: "Largest Contentful Paint",
+                value: audits["largest-contentful-paint"]?.displayValue ?? "N/A", 
+                score: audits["largest-contentful-paint"]?.score ?? null,
+                description: "Measures when the largest content element (e.g. hero image) is rendered."
+            },
+            cls: { 
+                label: "Cumulative Layout Shift",
+                value: audits["cumulative-layout-shift"]?.displayValue ?? "N/A", 
+                score: audits["cumulative-layout-shift"]?.score ?? null,
+                description: "Measures the visual stability of the page to prevent layout jumps."
+            },
+            tbt: { 
+                label: "Total Blocking Time",
+                value: audits["total-blocking-time"]?.displayValue ?? "N/A", 
+                score: audits["total-blocking-time"]?.score ?? null, 
+                description: "Sum of all time periods between FCP and Time to Interactive when task length exceeded 50ms."
+            },
+            si: { 
+                label: "Speed Index",
+                value: audits["speed-index"]?.displayValue ?? "N/A", 
+                score: audits["speed-index"]?.score ?? null,
+                description: "Shows how quickly the contents of a page are visually populated."
+            },
+            inp: { 
+                label: "Interaction to Next Paint",
+                value: audits["interaction-to-next-paint"]?.displayValue ?? "N/A", 
+                score: audits["interaction-to-next-paint"]?.score ?? null,
+                description: "Measures the time from user interaction to the next paint."
+            },
         };
 
         // Opportunities (items with potential savings)
@@ -117,13 +147,30 @@ export async function POST(req: NextRequest) {
             .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
             .slice(0, 20);
 
+        // Screenshots if available
+        const screenshot = (audits["final-screenshot"]?.details as any)?.data || (audits["full-page-screenshot"]?.details as any)?.screenshot?.data || null;
+
+        // Extract SEO specific metrics for richer display
+        const seoMetrics = {
+            title: audits["document-title"]?.displayValue || (audits["document-title"]?.score === 1 ? "Optimized" : "Missing"),
+            description: audits["meta-description"]?.displayValue || (audits["meta-description"]?.score === 1 ? "Present" : "Missing"),
+            links: audits["link-text"]?.displayValue || (audits["link-text"]?.details as any)?.items?.length ? `${(audits["link-text"]?.details as any).items.length} descriptive links` : "All valid",
+            altText: audits["image-alt"]?.displayValue || (audits["image-alt"]?.details as any)?.items?.length ? `${(audits["image-alt"]?.details as any).items.length} missing alt tags` : "All present",
+            canonical: audits["canonical"]?.score === 1 ? "Valid" : "Issues found",
+            robots: audits["robots-txt"]?.score === 1 ? "Valid" : "Check failed",
+            crawlable: audits["crawlable-anchors"]?.score === 1 ? "Yes" : "Issues found",
+            mobileFriendly: (audits["viewport"]?.score === 1 && audits["font-size"]?.score === 1) ? "Optimized" : "Needs work"
+        };
+
         return NextResponse.json({
             url: finalUrl,
             strategy,
             scores,
             vitals,
+            seoMetrics,
             opportunities,
             diagnostics,
+            screenshot,
             fetchTime: lhr.fetchTime,
         });
     } catch (e: any) {
