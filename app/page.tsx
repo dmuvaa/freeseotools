@@ -11,6 +11,7 @@ export default function FreeSEOToolsLandingPage() {
             title: "Core SEO Tools",
             description: "Essential checks for technical and on-page optimization.",
             tools: [
+                { name: "Unified SEO Audit", desc: "Run a massive fan-out technical SEO audit.", href: "/seo-audit", icon: <Zap className="size-6 text-indigo-500 fill-indigo-500/20" /> },
                 { name: "Schema Checker", desc: "Validate structured data markup.", href: "/core-seo/schema-checker", icon: <Tag className="size-6 text-indigo-500" /> },
                 { name: "JS Rendering", desc: "See how JS affects your rendered DOM.", href: "/core-seo/javascript-rendering-checker", icon: <FileCode className="size-6 text-fuchsia-500" /> },
                 { name: "Meta Tags Analyzer", desc: "Check on-page meta tags for SEO compliance.", href: "/core-seo/meta-tags-analyzer", icon: <Globe className="size-6 text-blue-500" /> },
