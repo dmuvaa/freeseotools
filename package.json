@@ -9,11 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.47",
+    "@ai-sdk/react": "^3.0.136",
     "@openrouter/sdk": "^0.3.11",
     "@sparticuz/chromium": "^143.0.4",
     "@supabase/ssr": "^0.8.0",
-    "@supabase/supabase-js": "^2.91.0",
+    "@supabase/supabase-js": "^2.99.3",
     "@tailwindcss/typography": "^0.5.19",
+    "ai": "^6.0.134",
     "cheerio": "^1.2.0",
     "chrome-launcher": "^1.2.1",
     "clsx": "^2.1.1",

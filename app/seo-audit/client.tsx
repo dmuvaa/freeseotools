@@ -675,7 +675,18 @@ export default function SEOAuditClient() {
                                                         <div className="space-y-4">
                                                             {p.jsonLd.map((ld: string, jIdx: number) => (
                                                                 <div key={jIdx} className="bg-slate-100 print:bg-white text-emerald-700 print:text-emerald-700 p-4 rounded-xl text-[11px] overflow-visible whitespace-pre-wrap break-all font-mono border border-slate-200 print:border-slate-200 shadow-inner">
-                                                                    <pre>{JSON.stringify(JSON.parse(ld), null, 2)}</pre>
+                                                                    <pre>{(() => {
+                                                                        try {
+                                                                            return JSON.stringify(JSON.parse(ld), null, 2);
+                                                                        } catch (e) {
+                                                                            try {
+                                                                                const sanitized = ld.replace(/[\u0000-\u001F]+/g, " ");
+                                                                                return JSON.stringify(JSON.parse(sanitized), null, 2);
+                                                                            } catch (err) {
+                                                                                return ld;
+                                                                            }
+                                                                        }
+                                                                    })()}</pre>
                                                                 </div>
                                                             ))}
                                                         </div>

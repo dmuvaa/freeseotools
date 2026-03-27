@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-
 export function GlobalLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     // Do not show universal header/footer on dashboard pages
