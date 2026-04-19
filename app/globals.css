@@ -386,3 +386,148 @@ html {
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* ============================================
+   PRINT STYLES — Native Browser PDF Export
+   ============================================ */
+@media print {
+  /* Force A4 paper with comfortable margins */
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  /* Hide interactive UI elements */
+  .print\:hidden,
+  button,
+  form,
+  input,
+  .animate-pulse,
+  .animate-spin {
+    display: none !important;
+  }
+
+  /* Reset backgrounds for paper output */
+  body {
+    background: white !important;
+    color: #0f172a !important;
+    font-size: 14px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ensure all elements preserve background colors in print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Prevent sections from being split awkwardly across pages */
+  .print\:break-inside-avoid,
+  [style*="pageBreakInside"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Allow large sections to break naturally if they exceed a page */
+  .print\:break-inside-auto {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  /* Add page breaks before major report sections */
+  h2 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* Tables should not break mid-row */
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Code/pre blocks: wrap text to prevent overflow */
+  pre,
+  code {
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove decorative shadows and rounded corners for cleaner print */
+  .shadow-sm,
+  .shadow-lg,
+  [class*="shadow-"] {
+    box-shadow: none !important;
+  }
+
+  /* Ensure the report container has no fixed/max height constraints */
+  .min-h-screen {
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  /* Remove sticky positioning for print */
+  .sticky {
+    position: static !important;
+  }
+
+  /* Links should be visible */
+  a {
+    text-decoration: none !important;
+  }
+
+  /* Remove blur effects */
+  .blur-3xl,
+  [class*="blur-"] {
+    filter: none !important;
+  }
+
+  /* Overflow handling — prevent clipped content */
+  .overflow-hidden,
+  .overflow-auto,
+  .overflow-scroll,
+  .overflow-x-auto,
+  .overflow-x-hidden {
+    overflow: visible !important;
+  }
+
+  /* Truncated text should show full content */
+  .truncate {
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+  }
+
+  /* Remove max-height constraints that clip content */
+  .max-h-0,
+  .max-h-40,
+  .max-h-60,
+  .max-h-96,
+  [class*="max-h-"] {
+    max-height: none !important;
+  }
+
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100% !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Remove animations */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Ring utilities can cause print artifacts */
+  [class*="ring-"] {
+    box-shadow: none !important;
+  }
+}

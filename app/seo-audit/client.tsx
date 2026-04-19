@@ -139,97 +139,28 @@ export default function SEOAuditClient() {
     const [exportError, setExportError] = useState<string | null>(null);
 
     const exportPDF = async () => {
-        if (!reportRef.current) return;
         setExporting(true);
         setExportError(null);
 
-        // Unique filename with date + time to prevent overwrites
-        const domain = url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0];
-        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-        const filename = `SEO-Report-${domain}-${ts}.pdf`;
+        // Build a branded filename: "SEO-Report_example.com_2026-04-19_16-51"
+        const domain = url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0] || 'site';
+        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16); // e.g. 2026-04-19T16-51
+        const pdfTitle = `SEO-Report_${domain}_${ts}`;
+
+        // Browsers use document.title as the default "Save as PDF" filename
+        const originalTitle = document.title;
+        document.title = pdfTitle;
 
         try {
-            const { toPng } = await import('html-to-image');
-            const { default: jsPDF } = await import('jspdf');
-            
-            const el = reportRef.current;
-
-            // Prepare elements by removing scroll constraints for full capture
-            const saved: { el: HTMLElement; prop: string; val: string }[] = [];
-            el.querySelectorAll('*').forEach(child => {
-                const ce = child as HTMLElement;
-                const cs = getComputedStyle(ce);
-                if (cs.maxHeight !== 'none') {
-                    saved.push({ el: ce, prop: 'maxHeight', val: ce.style.maxHeight });
-                    ce.style.maxHeight = 'none';
-                }
-                if (cs.overflow === 'auto' || cs.overflow === 'scroll' || cs.overflow === 'hidden') {
-                    saved.push({ el: ce, prop: 'overflow', val: ce.style.overflow });
-                    ce.style.overflow = 'visible';
-                }
-                if (cs.overflowY === 'auto' || cs.overflowY === 'scroll') {
-                    saved.push({ el: ce, prop: 'overflowY', val: ce.style.overflowY });
-                    ce.style.overflowY = 'visible';
-                }
-            });
-
-            // Generate image using native browser engine (supports all modern CSS)
-            const dataUrl = await toPng(el, { 
-                quality: 0.95,
-                pixelRatio: 2,
-                backgroundColor: '#ffffff'
-            });
-
-            // Restore original styles
-            saved.forEach(({ el: ce, prop, val }) => { (ce.style as any)[prop] = val; });
-
-            // Initialize PDF
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-            });
-
-            const imgProps = pdf.getImageProperties(dataUrl);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            let heightLeft = pdfHeight;
-            let position = 0;
-
-            // Apply slight margin natively in jsPDF for cleaner look
-            const margin = 10;
-            const effectiveWidth = pdfWidth - (margin * 2);
-            const effectiveHeight = (imgProps.height * effectiveWidth) / imgProps.width;
-
-            // First page
-            pdf.addImage(dataUrl, 'PNG', margin, margin, effectiveWidth, effectiveHeight);
-            heightLeft = effectiveHeight - (pageHeight - margin * 2);
-
-            // Subsequent pages
-            while (heightLeft > 0) {
-                position = heightLeft - effectiveHeight; // negative offset for next chunk
-                pdf.addPage();
-                pdf.addImage(dataUrl, 'PNG', margin, position + margin, effectiveWidth, effectiveHeight);
-                heightLeft -= pageHeight;
-            }
-
-            pdf.save(filename);
-
+            // Native browser print engine — produces ~1MB vector PDFs
+            // with selectable text and proper page breaks instead of 44MB raster images.
+            window.print();
         } catch (err: any) {
             console.error('PDF export failed:', err);
-
-            // Fallback: try window.print() with a user message
-            const useFallback = confirm(
-                `PDF generation encountered an error:\n"${err?.message || 'Unknown error'}"\n\nWould you like to use the browser's Print dialog instead?\n(Tip: Choose "Save as PDF" in the print dialog)`
-            );
-            if (useFallback) {
-                window.print();
-            } else {
-                setExportError(`PDF export failed: ${err?.message || 'Unknown error'}. Try using your browser's Print → Save as PDF.`);
-            }
+            setExportError(`PDF export failed: ${err?.message || 'Unknown error'}. Try using your browser's Print → Save as PDF.`);
         } finally {
+            // Restore original page title after the print dialog opens
+            document.title = originalTitle;
             setExporting(false);
         }
     };

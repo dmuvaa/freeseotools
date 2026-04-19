@@ -29,10 +29,12 @@ export function Header() {
                 </Link>
 
                 <nav className="hidden md:flex gap-8 items-center">
+                    {/* AI Agent hidden for now
                     <Link href="/chat" className="text-sm font-semibold text-[var(--primary)] transition-colors hover:text-[var(--primary-hover)] flex items-center gap-1.5">
                         <Sparkles className="size-4" />
                         AI Agent
                     </Link>
+                    */}
                     <Link href="/" className="text-sm font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                         All Tools
                     </Link>
@@ -73,10 +75,12 @@ export function Header() {
             {mobileMenuOpen && (
                 <div className="md:hidden border-b border-[var(--border)] bg-[var(--background)]">
                     <div className="container mx-auto py-4 flex flex-col gap-4 px-4">
+                        {/* AI Agent hidden for now
                         <Link href="/chat" className="text-sm font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                             <Sparkles className="size-4" />
                             AI Agent
                         </Link>
+                        */}
                         <Link href="/" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)]" onClick={() => setMobileMenuOpen(false)}>
                             All Tools
                         </Link>
